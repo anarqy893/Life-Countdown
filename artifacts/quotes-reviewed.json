@@ -1,0 +1,962 @@
+[
+  {
+    "text": "Count the days on which you have not been angry.",
+    "author": "Epictetus",
+    "work": "Discourses, Book 2, Chapter 18",
+    "theme": "Intentional living",
+    "source": "https://en.wikisource.org/wiki/The_Discourses_of_Epictetus;_with_the_Encheiridion_and_Fragments/Book_2/Chapter_18",
+    "translator": "George Long",
+    "verified": true,
+    "id": 1
+  },
+  {
+    "text": "Every sweet hath its sour; every evil its good.",
+    "author": "Ralph Waldo Emerson",
+    "work": "Compensation",
+    "theme": "Perspective",
+    "source": "https://en.wikisource.org/wiki/Essays:_First_Series/Compensation",
+    "verified": true,
+    "id": 2
+  },
+  {
+    "text": "First say to yourself Who you wish to be.",
+    "author": "Epictetus",
+    "work": "Discourses, Book 3, Chapter 23",
+    "theme": "Intentional living",
+    "source": "https://en.wikisource.org/wiki/The_Discourses_of_Epictetus;_with_the_Encheiridion_and_Fragments/Book_3/Chapter_23",
+    "translator": "George Long",
+    "verified": true,
+    "id": 3
+  },
+  {
+    "text": "Nothing, Lucilius, is ours, except time.",
+    "author": "Seneca",
+    "work": "Moral Letters to Lucilius, Letter 1",
+    "theme": "Finite time",
+    "source": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_1",
+    "translator": "Richard M. Gummere",
+    "verified": true,
+    "id": 4
+  },
+  {
+    "text": "The only way to have a friend is to be one.",
+    "author": "Ralph Waldo Emerson",
+    "work": "Friendship",
+    "theme": "Presence and connection",
+    "source": "https://en.wikisource.org/wiki/Essays:_First_Series/Friendship",
+    "verified": true,
+    "id": 5
+  },
+  {
+    "text": "Only those items which I notice shape my mind.",
+    "author": "William James",
+    "work": "The Principles of Psychology, Vol. 1, Chapter 11, Attention",
+    "theme": "Presence and connection",
+    "source": "https://www.gutenberg.org/cache/epub/57628/pg57628-images.html",
+    "verified": true,
+    "id": 6
+  },
+  {
+    "text": "Such a life is not made happier for being longer.",
+    "author": "Seneca",
+    "work": "Moral Letters to Lucilius, Letter 32",
+    "theme": "Intentional living",
+    "source": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_32",
+    "translator": "Richard M. Gummere",
+    "verified": true,
+    "id": 7
+  },
+  {
+    "text": "See that you bestow this present time upon yourself.",
+    "author": "Marcus Aurelius",
+    "work": "Meditations, Book 8, §§33, 44",
+    "theme": "Presence and connection",
+    "source": "https://en.wikisource.org/wiki/The_Meditations_of_the_Emperor_Marcus_Antoninus/Book_8",
+    "translator": "A. S. L. Farquharson",
+    "verified": true,
+    "id": 8
+  },
+  {
+    "text": "Every morning he arises he receives a bonus.",
+    "author": "Seneca",
+    "work": "Moral Letters to Lucilius, Letter 12",
+    "theme": "Appreciation",
+    "source": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_12",
+    "translator": "Richard M. Gummere",
+    "verified": true,
+    "id": 9
+  },
+  {
+    "text": "Lost time is never found again.",
+    "author": "Benjamin Franklin",
+    "work": "The Way to Wealth",
+    "theme": "Finite time",
+    "source": "https://en.wikisource.org/wiki/Way_to_wealth,_or,_Poor_Richard%27s_maxims_improved,_%26c.",
+    "verified": true,
+    "id": 10
+  },
+  {
+    "text": "You should stand upright, not be held upright.",
+    "author": "Marcus Aurelius",
+    "work": "Meditations, Book 3, §§5–6",
+    "theme": "Intentional living",
+    "source": "https://en.wikisource.org/wiki/The_Meditations_of_the_Emperor_Marcus_Antoninus/Book_3",
+    "translator": "A. S. L. Farquharson",
+    "verified": true,
+    "id": 11
+  },
+  {
+    "text": "Only that day dawns to which we are awake.",
+    "author": "Henry David Thoreau",
+    "work": "Walden, Conclusion",
+    "theme": "Presence and connection",
+    "source": "https://en.wikisource.org/wiki/Walden_(1854)_Thoreau/Conclusion",
+    "verified": true,
+    "id": 12
+  },
+  {
+    "text": "Reading maketh a full man; conference a ready man; and writing an exact man.",
+    "author": "Francis Bacon",
+    "work": "Essays, Of Studies",
+    "theme": "Rest and wonder",
+    "source": "https://en.wikisource.org/wiki/Essays,_civil_and_moral_(Harvard_Classics)/Of_Studies",
+    "verified": true,
+    "id": 13
+  },
+  {
+    "text": "A friend may well be reckoned the masterpiece of nature.",
+    "author": "Ralph Waldo Emerson",
+    "work": "Friendship",
+    "theme": "Presence and connection",
+    "source": "https://en.wikisource.org/wiki/Essays:_First_Series/Friendship",
+    "verified": true,
+    "id": 14
+  },
+  {
+    "text": "Make the best use of the present.",
+    "author": "Marcus Aurelius",
+    "work": "Meditations, Book 6, §§2, 39",
+    "theme": "Presence and connection",
+    "source": "https://en.wikisource.org/wiki/The_Meditations_of_the_Emperor_Marcus_Antoninus/Book_6",
+    "translator": "A. S. L. Farquharson",
+    "verified": true,
+    "id": 15
+  },
+  {
+    "text": "And let today embrace the past with remembrance and the future with longing.",
+    "author": "Kahlil Gibran",
+    "work": "The Prophet, On Time",
+    "theme": "Presence and connection",
+    "source": "https://en.wikisource.org/wiki/The_Prophet_(Gibran)",
+    "verified": true,
+    "id": 16
+  },
+  {
+    "text": "I never found the companion that was so companionable as solitude.",
+    "author": "Henry David Thoreau",
+    "work": "Walden, Solitude",
+    "theme": "Rest and wonder",
+    "source": "https://en.wikisource.org/wiki/Walden_(1854)_Thoreau/Solitude",
+    "verified": true,
+    "id": 17
+  },
+  {
+    "text": "A man should lend himself to others, and only give himself to himself.",
+    "author": "Michel de Montaigne",
+    "work": "Essays, Book 3, Of Managing the Will",
+    "theme": "Intentional living",
+    "source": "https://en.wikisource.org/wiki/The_Essays_of_Montaigne/Book_III/Chapter_X",
+    "translator": "Charles Cotton, edited by W. C. Hazlitt",
+    "verified": true,
+    "id": 18
+  },
+  {
+    "text": "Let not the future trouble you.",
+    "author": "Marcus Aurelius",
+    "work": "Meditations, Book 7, §§8, 59",
+    "theme": "Perspective",
+    "source": "https://en.wikisource.org/wiki/The_Meditations_of_the_Emperor_Marcus_Antoninus/Book_7",
+    "translator": "A. S. L. Farquharson",
+    "verified": true,
+    "id": 19
+  },
+  {
+    "text": "While we are postponing, life speeds by.",
+    "author": "Seneca",
+    "work": "Moral Letters to Lucilius, Letter 1",
+    "theme": "Finite time",
+    "source": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_1",
+    "translator": "Richard M. Gummere",
+    "verified": true,
+    "id": 20
+  },
+  {
+    "text": "Choose the higher and hold fast to that.",
+    "author": "Marcus Aurelius",
+    "work": "Meditations, Book 3, §§5–6",
+    "theme": "Intentional living",
+    "source": "https://en.wikisource.org/wiki/The_Meditations_of_the_Emperor_Marcus_Antoninus/Book_3",
+    "translator": "A. S. L. Farquharson",
+    "verified": true,
+    "id": 21
+  },
+  {
+    "text": "To travel hopefully is a better thing than to arrive.",
+    "author": "Robert Louis Stevenson",
+    "work": "El Dorado",
+    "theme": "Intentional living",
+    "source": "https://en.wikisource.org/wiki/Virginibus_Puerisque_and_Other_Papers/El_Dorado",
+    "verified": true,
+    "id": 22
+  },
+  {
+    "text": "Where it is possible to live, there also it is possible to live well.",
+    "author": "Marcus Aurelius",
+    "work": "Meditations, Book 5, §§16, 9",
+    "theme": "Perspective",
+    "source": "https://en.wikisource.org/wiki/The_Meditations_of_the_Emperor_Marcus_Antoninus/Book_5",
+    "translator": "A. S. L. Farquharson",
+    "verified": true,
+    "id": 23
+  },
+  {
+    "text": "There is no one type for man.",
+    "author": "Oscar Wilde",
+    "work": "The Soul of Man under Socialism",
+    "theme": "Intentional living",
+    "source": "https://www.gutenberg.org/files/1017/1017-h/1017-h.htm",
+    "verified": true,
+    "id": 24
+  },
+  {
+    "text": "To finish the moment, to find the journey’s end in every step of the road.",
+    "author": "Ralph Waldo Emerson",
+    "work": "Experience",
+    "theme": "Appreciation",
+    "source": "https://en.wikisource.org/wiki/Essays:_Second_Series/Experience",
+    "verified": true,
+    "id": 25
+  },
+  {
+    "text": "Infinitely swift is the flight of time.",
+    "author": "Seneca",
+    "work": "Moral Letters to Lucilius, Letter 49",
+    "theme": "Finite time",
+    "source": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_49",
+    "translator": "Richard M. Gummere",
+    "verified": true,
+    "id": 26
+  },
+  {
+    "text": "Our life is frittered away by detail.",
+    "author": "Henry David Thoreau",
+    "work": "Walden, Where I Lived, and What I Lived for",
+    "theme": "Intentional living",
+    "source": "https://en.wikisource.org/wiki/Walden_(1854)_Thoreau/Where_I_Lived,_and_What_I_Lived_for",
+    "verified": true,
+    "id": 27
+  },
+  {
+    "text": "Nothing is secure but life, transition, the energizing spirit.",
+    "author": "Ralph Waldo Emerson",
+    "work": "Circles",
+    "theme": "Perspective",
+    "source": "https://en.wikisource.org/wiki/Essays:_First_Series/Circles",
+    "verified": true,
+    "id": 28
+  },
+  {
+    "text": "And one day, mind you, is a stage on life’s journey.",
+    "author": "Seneca",
+    "work": "Moral Letters to Lucilius, Letter 12",
+    "theme": "Appreciation",
+    "source": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_12",
+    "translator": "Richard M. Gummere",
+    "verified": true,
+    "id": 29
+  },
+  {
+    "text": "After a fall return again.",
+    "author": "Marcus Aurelius",
+    "work": "Meditations, Book 5, §§16, 9",
+    "theme": "Perspective",
+    "source": "https://en.wikisource.org/wiki/The_Meditations_of_the_Emperor_Marcus_Antoninus/Book_5",
+    "translator": "A. S. L. Farquharson",
+    "verified": true,
+    "id": 30
+  },
+  {
+    "text": "No one has any right to draw for himself upon the future.",
+    "author": "Seneca",
+    "work": "Moral Letters to Lucilius, Letter 101",
+    "theme": "Finite time",
+    "source": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_101",
+    "translator": "Richard M. Gummere",
+    "verified": true,
+    "id": 31
+  },
+  {
+    "text": "Some books are to be tasted.",
+    "author": "Francis Bacon",
+    "work": "Essays, Of Studies",
+    "theme": "Rest and wonder",
+    "source": "https://en.wikisource.org/wiki/Essays,_civil_and_moral_(Harvard_Classics)/Of_Studies",
+    "verified": true,
+    "id": 32
+  },
+  {
+    "text": "We break up life into little bits, and fritter it away.",
+    "author": "Seneca",
+    "work": "Moral Letters to Lucilius, Letter 32",
+    "theme": "Intentional living",
+    "source": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_32",
+    "translator": "Richard M. Gummere",
+    "verified": true,
+    "id": 33
+  },
+  {
+    "text": "Freedom is of the essence.",
+    "author": "Robert Louis Stevenson",
+    "work": "Walking Tours",
+    "theme": "Rest and wonder",
+    "source": "https://en.wikisource.org/wiki/Virginibus_Puerisque_and_Other_Papers/Walking_Tours",
+    "verified": true,
+    "id": 34
+  },
+  {
+    "text": "Remember that in life you ought to behave as at a banquet.",
+    "author": "Epictetus",
+    "work": "Encheiridion, §§1, 15",
+    "theme": "Perspective",
+    "source": "https://en.wikisource.org/wiki/The_Discourses_of_Epictetus/The_Encheiridion%2C_or_Manual",
+    "translator": "George Long",
+    "verified": true,
+    "id": 35
+  },
+  {
+    "text": "The true success is to labour.",
+    "author": "Robert Louis Stevenson",
+    "work": "El Dorado",
+    "theme": "Intentional living",
+    "source": "https://en.wikisource.org/wiki/Virginibus_Puerisque_and_Other_Papers/El_Dorado",
+    "verified": true,
+    "id": 36
+  },
+  {
+    "text": "You would measure time the measureless and the immeasurable.",
+    "author": "Kahlil Gibran",
+    "work": "The Prophet, On Time",
+    "theme": "Presence and connection",
+    "source": "https://en.wikisource.org/wiki/The_Prophet_(Gibran)",
+    "verified": true,
+    "id": 37
+  },
+  {
+    "text": "Quality time matters.",
+    "author": "Tim Urban",
+    "work": "Wait But Why, The Tail End",
+    "theme": "Presence and connection",
+    "source": "https://waitbutwhy.com/2015/12/the-tail-end.html",
+    "verified": true,
+    "id": 38
+  },
+  {
+    "text": "My life is for itself and not for a spectacle.",
+    "author": "Ralph Waldo Emerson",
+    "work": "Self-Reliance",
+    "theme": "Intentional living",
+    "source": "https://en.wikisource.org/wiki/Essays:_First_Series/Self-Reliance",
+    "verified": true,
+    "id": 39
+  },
+  {
+    "text": "To live is the rarest thing in the world. Most people exist, that is all.",
+    "author": "Oscar Wilde",
+    "work": "The Soul of Man under Socialism",
+    "theme": "Intentional living",
+    "source": "https://www.gutenberg.org/files/1017/1017-h/1017-h.htm",
+    "verified": true,
+    "id": 40
+  },
+  {
+    "text": "Do you wish to do good or to be praised?",
+    "author": "Epictetus",
+    "work": "Discourses, Book 3, Chapter 23",
+    "theme": "Intentional living",
+    "source": "https://en.wikisource.org/wiki/The_Discourses_of_Epictetus;_with_the_Encheiridion_and_Fragments/Book_3/Chapter_23",
+    "translator": "George Long",
+    "verified": true,
+    "id": 41
+  },
+  {
+    "text": "Your remaining face time with any person depends largely on where that person falls on your list of life priorities.",
+    "author": "Tim Urban",
+    "work": "Wait But Why, The Tail End",
+    "theme": "Presence and connection",
+    "source": "https://waitbutwhy.com/2015/12/the-tail-end.html",
+    "verified": true,
+    "id": 42
+  },
+  {
+    "text": "We suffer more often in imagination than in reality.",
+    "author": "Seneca",
+    "work": "Moral Letters to Lucilius, Letter 13",
+    "theme": "Perspective",
+    "source": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_13",
+    "translator": "Richard M. Gummere",
+    "verified": true,
+    "id": 43
+  },
+  {
+    "text": "Delve within; within is the fountain of good.",
+    "author": "Marcus Aurelius",
+    "work": "Meditations, Book 7, §§8, 59",
+    "theme": "Perspective",
+    "source": "https://en.wikisource.org/wiki/The_Meditations_of_the_Emperor_Marcus_Antoninus/Book_7",
+    "translator": "A. S. L. Farquharson",
+    "verified": true,
+    "id": 44
+  },
+  {
+    "text": "The very soul must be happy and confident, lifted above every circumstance.",
+    "author": "Seneca",
+    "work": "Moral Letters to Lucilius, Letter 23",
+    "theme": "Appreciation",
+    "source": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_23",
+    "translator": "Richard M. Gummere",
+    "verified": true,
+    "id": 45
+  },
+  {
+    "text": "Custom is a second nature, and no less powerful.",
+    "author": "Michel de Montaigne",
+    "work": "Essays, Book 3, Of Managing the Will",
+    "theme": "Intentional living",
+    "source": "https://en.wikisource.org/wiki/The_Essays_of_Montaigne/Book_III/Chapter_X",
+    "translator": "Charles Cotton, edited by W. C. Hazlitt",
+    "verified": true,
+    "id": 46
+  },
+  {
+    "text": "Life is a series of surprises.",
+    "author": "Ralph Waldo Emerson",
+    "work": "Experience",
+    "theme": "Appreciation",
+    "source": "https://en.wikisource.org/wiki/Essays:_Second_Series/Experience",
+    "verified": true,
+    "id": 47
+  },
+  {
+    "text": "You must be open to all impressions and let your thoughts take colour from what you see.",
+    "author": "Robert Louis Stevenson",
+    "work": "Walking Tours",
+    "theme": "Rest and wonder",
+    "source": "https://en.wikisource.org/wiki/Virginibus_Puerisque_and_Other_Papers/Walking_Tours",
+    "verified": true,
+    "id": 48
+  },
+  {
+    "text": "Love the men among whom your lot has fallen, but love them truly.",
+    "author": "Marcus Aurelius",
+    "work": "Meditations, Book 6, §§2, 39",
+    "theme": "Presence and connection",
+    "source": "https://en.wikisource.org/wiki/The_Meditations_of_the_Emperor_Marcus_Antoninus/Book_6",
+    "translator": "A. S. L. Farquharson",
+    "verified": true,
+    "id": 49
+  },
+  {
+    "text": "All the spring may be hidden in the single bud.",
+    "author": "Oscar Wilde",
+    "work": "De Profundis",
+    "theme": "Perspective",
+    "source": "https://www.gutenberg.org/cache/epub/921/pg921-images.html",
+    "verified": true,
+    "id": 50
+  },
+  {
+    "text": "Doesn’t everything die at last, and too soon?",
+    "author": "Mary Oliver",
+    "work": "The Summer Day",
+    "theme": "Finite time",
+    "source": "https://poets.org/poem/summer-day",
+    "verified": true,
+    "id": 51
+  },
+  {
+    "text": "To enjoy a thing exclusively is commonly to exclude yourself from the true enjoyment of it.",
+    "author": "Henry David Thoreau",
+    "work": "Walking",
+    "theme": "Rest and wonder",
+    "source": "https://www.gutenberg.org/cache/epub/1022/pg1022-images.html",
+    "verified": true,
+    "id": 52
+  },
+  {
+    "text": "Young and old die upon the same terms.",
+    "author": "Michel de Montaigne",
+    "work": "Essays, Book 1, That to Study Philosophy Is to Learn to Die",
+    "theme": "Finite time",
+    "source": "https://en.wikisource.org/wiki/The_Essays_of_Montaigne/Book_I/Chapter_XIX",
+    "translator": "Charles Cotton, edited by W. C. Hazlitt",
+    "verified": true,
+    "id": 53
+  },
+  {
+    "text": "Of things some are in our power, and others are not.",
+    "author": "Epictetus",
+    "work": "Encheiridion, §§1, 15",
+    "theme": "Perspective",
+    "source": "https://en.wikisource.org/wiki/The_Discourses_of_Epictetus/The_Encheiridion%2C_or_Manual",
+    "translator": "George Long",
+    "verified": true,
+    "id": 54
+  },
+  {
+    "text": "Forever is composed of Nows.",
+    "author": "Emily Dickinson",
+    "work": "Forever is composed of Nows",
+    "theme": "Presence and connection",
+    "source": "https://poets.org/poem/forever-composed-nows-25",
+    "verified": true,
+    "id": 55
+  },
+  {
+    "text": "If you would make any thing a habit, do it.",
+    "author": "Epictetus",
+    "work": "Discourses, Book 2, Chapter 18",
+    "theme": "Intentional living",
+    "source": "https://en.wikisource.org/wiki/The_Discourses_of_Epictetus;_with_the_Encheiridion_and_Fragments/Book_2/Chapter_18",
+    "translator": "George Long",
+    "verified": true,
+    "id": 56
+  },
+  {
+    "text": "Every limit is a beginning as well as an ending.",
+    "author": "George Eliot",
+    "work": "Middlemarch, Finale",
+    "theme": "Presence and connection",
+    "source": "https://www.gutenberg.org/cache/epub/145/pg145-images.html",
+    "verified": true,
+    "id": 57
+  },
+  {
+    "text": "I went to the woods because I wished to live deliberately.",
+    "author": "Henry David Thoreau",
+    "work": "Walden, Where I Lived, and What I Lived for",
+    "theme": "Intentional living",
+    "source": "https://en.wikisource.org/wiki/Walden_(1854)_Thoreau/Where_I_Lived,_and_What_I_Lived_for",
+    "verified": true,
+    "id": 58
+  },
+  {
+    "text": "Dost thou love life? Then do not squander time, for that’s the stuff life is made of.",
+    "author": "Benjamin Franklin",
+    "work": "The Way to Wealth",
+    "theme": "Finite time",
+    "source": "https://en.wikisource.org/wiki/Way_to_wealth,_or,_Poor_Richard%27s_maxims_improved,_%26c.",
+    "verified": true,
+    "id": 59
+  },
+  {
+    "text": "Be intent only on what is now being done.",
+    "author": "Marcus Aurelius",
+    "work": "Meditations, Book 9, §§41–42",
+    "theme": "Intentional living",
+    "source": "https://en.wikisource.org/wiki/The_Meditations_of_the_Emperor_Marcus_Antoninus/Book_9",
+    "translator": "A. S. L. Farquharson",
+    "verified": true,
+    "id": 60
+  },
+  {
+    "text": "The growing good of the world is partly dependent on unhistoric acts.",
+    "author": "George Eliot",
+    "work": "Middlemarch, Finale",
+    "theme": "Presence and connection",
+    "source": "https://www.gutenberg.org/cache/epub/145/pg145-images.html",
+    "verified": true,
+    "id": 61
+  },
+  {
+    "text": "Do not wander without a purpose.",
+    "author": "Marcus Aurelius",
+    "work": "Meditations, Book 4, §§17, 22",
+    "theme": "Intentional living",
+    "source": "https://en.wikisource.org/wiki/The_Meditations_of_the_Emperor_Marcus_Antoninus/Book_4",
+    "translator": "A. S. L. Farquharson",
+    "verified": true,
+    "id": 62
+  },
+  {
+    "text": "The mass of men lead lives of quiet desperation.",
+    "author": "Henry David Thoreau",
+    "work": "Walden, Economy",
+    "theme": "Finite time",
+    "source": "https://en.wikisource.org/wiki/Walden_(1854)_Thoreau/Economy",
+    "verified": true,
+    "id": 63
+  },
+  {
+    "text": "Trust thyself: every heart vibrates to that iron string.",
+    "author": "Ralph Waldo Emerson",
+    "work": "Self-Reliance",
+    "theme": "Intentional living",
+    "source": "https://en.wikisource.org/wiki/Essays:_First_Series/Self-Reliance",
+    "verified": true,
+    "id": 64
+  },
+  {
+    "text": "In Wildness is the preservation of the World.",
+    "author": "Henry David Thoreau",
+    "work": "Walking",
+    "theme": "Rest and wonder",
+    "source": "https://www.gutenberg.org/cache/epub/1022/pg1022-images.html",
+    "verified": true,
+    "id": 65
+  },
+  {
+    "text": "When I dance, I dance; when I sleep, I sleep.",
+    "author": "Michel de Montaigne",
+    "work": "Essays, Book 3, Of Experience",
+    "theme": "Presence and connection",
+    "source": "https://en.wikisource.org/wiki/The_Essays_of_Montaigne/Book_III/Chapter_XIII",
+    "translator": "Charles Cotton, edited by W. C. Hazlitt",
+    "verified": true,
+    "id": 66
+  },
+  {
+    "text": "How many steps for how short a climb!",
+    "author": "Seneca",
+    "work": "Moral Letters to Lucilius, Letter 49",
+    "theme": "Finite time",
+    "source": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_49",
+    "translator": "Richard M. Gummere",
+    "verified": true,
+    "id": 67
+  },
+  {
+    "text": "As if you could kill time without injuring eternity.",
+    "author": "Henry David Thoreau",
+    "work": "Walden, Economy",
+    "theme": "Finite time",
+    "source": "https://en.wikisource.org/wiki/Walden_(1854)_Thoreau/Economy",
+    "verified": true,
+    "id": 68
+  },
+  {
+    "text": "That it will never come again is what makes life so sweet.",
+    "author": "Emily Dickinson",
+    "work": "That it will never come again, poem 1741",
+    "theme": "Appreciation",
+    "source": "https://www.americanpoems.com/poets/emilydickinson/that-it-will-never-come-again/",
+    "verified": true,
+    "id": 69
+  },
+  {
+    "text": "The very thing that we grasp slips through our hands.",
+    "author": "Seneca",
+    "work": "Moral Letters to Lucilius, Letter 101",
+    "theme": "Finite time",
+    "source": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_101",
+    "translator": "Richard M. Gummere",
+    "verified": true,
+    "id": 70
+  },
+  {
+    "text": "Where there is sorrow there is holy ground.",
+    "author": "Oscar Wilde",
+    "work": "De Profundis",
+    "theme": "Perspective",
+    "source": "https://www.gutenberg.org/cache/epub/921/pg921-images.html",
+    "verified": true,
+    "id": 71
+  },
+  {
+    "text": "The matter of the art of living is each man’s life.",
+    "author": "Epictetus",
+    "work": "Discourses, Book 1, Chapter 15",
+    "theme": "Intentional living",
+    "source": "https://en.wikisource.org/wiki/The_Discourses_of_Epictetus;_with_the_Encheiridion_and_Fragments/Book_1/Chapter_15",
+    "translator": "George Long",
+    "verified": true,
+    "id": 72
+  },
+  {
+    "text": "Where death waits for us is uncertain; let us look for him everywhere.",
+    "author": "Michel de Montaigne",
+    "work": "Essays, Book 1, That to Study Philosophy Is to Learn to Die",
+    "theme": "Finite time",
+    "source": "https://en.wikisource.org/wiki/The_Essays_of_Montaigne/Book_I/Chapter_XIX",
+    "translator": "Charles Cotton, edited by W. C. Hazlitt",
+    "verified": true,
+    "id": 73
+  },
+  {
+    "text": "When you have done good, what more, oh man, do you wish?",
+    "author": "Marcus Aurelius",
+    "work": "Meditations, Book 9, §§41–42",
+    "theme": "Intentional living",
+    "source": "https://en.wikisource.org/wiki/The_Meditations_of_the_Emperor_Marcus_Antoninus/Book_9",
+    "translator": "A. S. L. Farquharson",
+    "verified": true,
+    "id": 74
+  },
+  {
+    "text": "For the soul is more powerful than any sort of Fortune.",
+    "author": "Seneca",
+    "work": "Moral Letters to Lucilius, Letter 98",
+    "theme": "Perspective",
+    "source": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_98",
+    "translator": "Richard M. Gummere",
+    "verified": true,
+    "id": 75
+  },
+  {
+    "text": "Brief is the life of each of us.",
+    "author": "Marcus Aurelius",
+    "work": "Meditations, Book 2, §§5–6",
+    "theme": "Finite time",
+    "source": "https://en.wikisource.org/wiki/The_Meditations_of_the_Emperor_Marcus_Antoninus/Book_2",
+    "translator": "A. S. L. Farquharson",
+    "verified": true,
+    "id": 76
+  },
+  {
+    "text": "Men fear death, as children fear to go in the dark.",
+    "author": "Francis Bacon",
+    "work": "Essays, Of Death",
+    "theme": "Finite time",
+    "source": "https://en.wikisource.org/wiki/Essays,_civil_and_moral_(Harvard_Classics)/Of_Death",
+    "verified": true,
+    "id": 77
+  },
+  {
+    "text": "Accept without pride, relinquish without a struggle.",
+    "author": "Marcus Aurelius",
+    "work": "Meditations, Book 8, §§33, 44",
+    "theme": "Presence and connection",
+    "source": "https://en.wikisource.org/wiki/The_Meditations_of_the_Emperor_Marcus_Antoninus/Book_8",
+    "translator": "A. S. L. Farquharson",
+    "verified": true,
+    "id": 78
+  },
+  {
+    "text": "The joy which entered from without will some day depart.",
+    "author": "Seneca",
+    "work": "Moral Letters to Lucilius, Letter 98",
+    "theme": "Perspective",
+    "source": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_98",
+    "translator": "Richard M. Gummere",
+    "verified": true,
+    "id": 79
+  },
+  {
+    "text": "The only sin is limitation.",
+    "author": "Ralph Waldo Emerson",
+    "work": "Circles",
+    "theme": "Perspective",
+    "source": "https://en.wikisource.org/wiki/Essays:_First_Series/Circles",
+    "verified": true,
+    "id": 80
+  },
+  {
+    "text": "So look forward to better things.",
+    "author": "Seneca",
+    "work": "Moral Letters to Lucilius, Letter 13",
+    "theme": "Perspective",
+    "source": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_13",
+    "translator": "Richard M. Gummere",
+    "verified": true,
+    "id": 81
+  },
+  {
+    "text": "You do each act as though it were your last.",
+    "author": "Marcus Aurelius",
+    "work": "Meditations, Book 2, §§5–6",
+    "theme": "Finite time",
+    "source": "https://en.wikisource.org/wiki/The_Meditations_of_the_Emperor_Marcus_Antoninus/Book_2",
+    "translator": "A. S. L. Farquharson",
+    "verified": true,
+    "id": 82
+  },
+  {
+    "text": "Learn how to feel joy.",
+    "author": "Seneca",
+    "work": "Moral Letters to Lucilius, Letter 23",
+    "theme": "Appreciation",
+    "source": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_23",
+    "translator": "Richard M. Gummere",
+    "verified": true,
+    "id": 83
+  },
+  {
+    "text": "Extreme busyness … is a symptom of deficient vitality.",
+    "author": "Robert Louis Stevenson",
+    "work": "An Apology for Idlers",
+    "theme": "Rest and wonder",
+    "source": "https://www.gutenberg.org/cache/epub/69825/pg69825-images.html",
+    "verified": true,
+    "id": 84
+  },
+  {
+    "text": "It is wonderful how much innocent happiness we thoughtlessly throw away.",
+    "author": "John Lubbock",
+    "work": "The Pleasures of Life",
+    "theme": "Appreciation",
+    "source": "https://www.gutenberg.org/cache/epub/7952/pg7952-images.html",
+    "verified": true,
+    "id": 85
+  },
+  {
+    "text": "The glorious masterpiece of man is to live to purpose.",
+    "author": "Michel de Montaigne",
+    "work": "Essays, Book 3, Of Experience",
+    "theme": "Presence and connection",
+    "source": "https://en.wikisource.org/wiki/The_Essays_of_Montaigne/Book_III/Chapter_XIII",
+    "translator": "Charles Cotton, edited by W. C. Hazlitt",
+    "verified": true,
+    "id": 86
+  },
+  {
+    "text": "Think only of the past as its remembrance gives you pleasure.",
+    "author": "Jane Austen",
+    "work": "Pride and Prejudice, Chapter 58",
+    "theme": "Perspective",
+    "source": "https://www.gutenberg.org/cache/epub/1342/pg1342-images.html",
+    "context": "Spoken by Elizabeth Bennet; a fictional character’s advice.",
+    "verified": true,
+    "id": 87
+  },
+  {
+    "text": "My experience is what I agree to attend to.",
+    "author": "William James",
+    "work": "The Principles of Psychology, Vol. 1, Chapter 11, Attention",
+    "theme": "Presence and connection",
+    "source": "https://www.gutenberg.org/cache/epub/57628/pg57628-images.html",
+    "verified": true,
+    "id": 88
+  },
+  {
+    "text": "There is no duty we so much underrate as the duty of being happy.",
+    "author": "Robert Louis Stevenson",
+    "work": "An Apology for Idlers",
+    "theme": "Rest and wonder",
+    "source": "https://www.gutenberg.org/cache/epub/69825/pg69825-images.html",
+    "verified": true,
+    "id": 89
+  },
+  {
+    "text": "The most important time is now.",
+    "author": "Leo Tolstoy",
+    "work": "Three Questions, in Tolstoi for the Young",
+    "theme": "Presence and connection",
+    "source": "https://en.wikisource.org/wiki/Tolstoi_for_the_Young/Three_Questions",
+    "verified": true,
+    "id": 90
+  },
+  {
+    "text": "There is no charm equal to tenderness of heart.",
+    "author": "Jane Austen",
+    "work": "Emma, Vol. 2, Chapter 13",
+    "theme": "Presence and connection",
+    "source": "https://www.gutenberg.org/cache/epub/158/pg158-images.html",
+    "context": "Emma Woodhouse speaking to herself; a fictional character’s reflection.",
+    "verified": true,
+    "id": 91
+  },
+  {
+    "text": "Rather than love, than money, than fame, give me truth.",
+    "author": "Henry David Thoreau",
+    "work": "Walden, Conclusion",
+    "theme": "Presence and connection",
+    "source": "https://en.wikisource.org/wiki/Walden_(1854)_Thoreau/Conclusion",
+    "verified": true,
+    "id": 92
+  },
+  {
+    "text": "Nothing great … is produced suddenly.",
+    "author": "Epictetus",
+    "work": "Discourses, Book 1, Chapter 15",
+    "theme": "Intentional living",
+    "source": "https://en.wikisource.org/wiki/The_Discourses_of_Epictetus;_with_the_Encheiridion_and_Fragments/Book_1/Chapter_15",
+    "translator": "George Long",
+    "verified": true,
+    "id": 93
+  },
+  {
+    "text": "Tell me, what is it you plan to do with your one wild and precious life?",
+    "author": "Mary Oliver",
+    "work": "The Summer Day",
+    "theme": "Finite time",
+    "source": "https://poets.org/poem/summer-day",
+    "verified": true,
+    "id": 94
+  },
+  {
+    "text": "While you have life, while you may, become good.",
+    "author": "Marcus Aurelius",
+    "work": "Meditations, Book 4, §§17, 22",
+    "theme": "Intentional living",
+    "source": "https://en.wikisource.org/wiki/The_Meditations_of_the_Emperor_Marcus_Antoninus/Book_4",
+    "translator": "A. S. L. Farquharson",
+    "verified": true,
+    "id": 95
+  },
+  {
+    "text": "For every thing you have missed, you have gained something else.",
+    "author": "Ralph Waldo Emerson",
+    "work": "Compensation",
+    "theme": "Perspective",
+    "source": "https://en.wikisource.org/wiki/Essays:_First_Series/Compensation",
+    "verified": true,
+    "id": 96
+  },
+  {
+    "text": "Time indeed, is a sacred gift, and each day is a little life.",
+    "author": "John Lubbock",
+    "work": "The Pleasures of Life",
+    "theme": "Appreciation",
+    "source": "https://www.gutenberg.org/cache/epub/7952/pg7952-images.html",
+    "verified": true,
+    "id": 97
+  },
+  {
+    "text": "It is as natural to die as to be born.",
+    "author": "Francis Bacon",
+    "work": "Essays, Of Death",
+    "theme": "Finite time",
+    "source": "https://en.wikisource.org/wiki/Essays,_civil_and_moral_(Harvard_Classics)/Of_Death",
+    "verified": true,
+    "id": 98
+  },
+  {
+    "text": "The most essential man is the one with whom you happen to be at the moment.",
+    "author": "Leo Tolstoy",
+    "work": "Three Questions, in Tolstoi for the Young",
+    "theme": "Presence and connection",
+    "source": "https://en.wikisource.org/wiki/Tolstoi_for_the_Young/Three_Questions",
+    "verified": true,
+    "id": 99
+  },
+  {
+    "text": "I find it wholesome to be alone the greater part of the time.",
+    "author": "Henry David Thoreau",
+    "work": "Walden, Solitude",
+    "theme": "Rest and wonder",
+    "source": "https://en.wikisource.org/wiki/Walden_(1854)_Thoreau/Solitude",
+    "verified": true,
+    "id": 100
+  },
+  {
+    "text": "We have two lives, and the second begins when we realize we only have one.",
+    "author": "Unknown",
+    "work": "Attribution discussion",
+    "theme": "Finite time",
+    "source": "https://www.patheos.com/blogs/monkeymind/2016/05/two-lives-one-life.html",
+    "context": "Selected by you. Author unverified; often attributed to Confucius without a confirmed original source.",
+    "verified": false,
+    "attributionStatus": "unverified",
+    "approved": true,
+    "id": 101
+  }
+]

@@ -1,4 +1,4 @@
-import { defaults, today, addYears, dateValue, civilNow, periodFor, calculate, countdownParts, COUNTDOWN_FORMATS, squareSegments, weeklyHours, validateSchedule } from './model.mjs';
+import { defaults, today, addYears, dateValue, civilNow, periodFor, widgetPeriodFor, calculate, countdownParts, COUNTDOWN_FORMATS, squareSegments, weeklyHours, validateSchedule } from './model.mjs';
 import { HOURLY_EFFECTS, isHourlyBoundary } from './hourly.mjs';
 import { timelineMarkup, fitTimeline } from './timeline.mjs';
 import { MOMENT_EXAMPLES, estimateOccasions, momentsEditorMarkup, occasionResultMarkup, momentsCollectionMarkup, momentsPickerMarkup, momentsBatchMarkup, occasionBatchResultMarkup, momentsLiveMarkup, momentsLivePreviewMarkup, momentsWidgetMarkup } from './moments.mjs';
@@ -30,6 +30,7 @@ let gridObserver;
 let widgetSettingsOpen = false;
 let widgetExpanded = false;
 let widgetGridTransition = Promise.resolve();
+let widgetPeriodMenuOpen = false;
 let counterDragging = false;
 let previousHourlyTick = new Date();
 let effectAnimations = [], effectOverlay, pendingEffectPreview;
@@ -104,12 +105,12 @@ function notify(message) {
   notice.textContent = message; notice.classList.add('visible');
   clearTimeout(noticeTimeout); noticeTimeout = setTimeout(() => notice.classList.remove('visible'), 3500);
 }
-async function save(next, message = 'Saved on this computer') {
+async function save(next, message = 'Saved on this computer', { render: shouldRender = true } = {}) {
   const previous = state;
   state = next;
   try { await window.desktop.save(next); }
   catch (error) { if (state === next) state = previous; throw error; }
-  render();
+  if (shouldRender) render();
   if (message) notify(message);
 }
 function clockMarkup(end) {
@@ -126,7 +127,7 @@ function bindClock() {
   });
 }
 function updateClocks() {
-  const period = periodFor(state);
+  const period = isWidget ? widgetPeriodFor(state) : periodFor(state);
   if (period) document.querySelectorAll('[data-clock]').forEach(node => { node.innerHTML = clockMarkup(period.end); });
   fitCounterStrip();
 }
@@ -173,7 +174,7 @@ function refreshTime() {
   // Recalculate from the current clock, never from a count of timer ticks.
   // Leave settings forms intact so waking the computer cannot discard edits.
   if (isWidget) {
-    if (counterDragging || effectPlaying || document.activeElement?.matches('[data-opacity]')) updateClocks();
+    if (counterDragging || effectPlaying || widgetPeriodMenuOpen || document.activeElement?.matches('[data-opacity]')) updateClocks();
     else renderWidget();
   }
   else if (page === 'overview' || page === 'moments' && !momentDraft && !momentPicker) {
@@ -208,7 +209,7 @@ function render() {
       <div><div class="nav-label">Make it yours</div><nav class="period-list" aria-label="Settings"><button class="period-button ${page === 'settings' ? 'active' : ''}" id="settings">Your time</button><button class="period-button ${page === 'appearance' ? 'active' : ''}" id="appearance">Widget appearance</button><button class="period-button ${page === 'help' ? 'active' : ''}" id="help">Help & tour</button>${guidePending() && page !== 'guide' ? '<button class="period-button" id="resume-guide">Continue setup →</button>' : ''}</nav></div>
       </div>
       <footer><p>A little perspective, every day.<br>Stored on this computer.</p>
-        <button class="widget-launch" id="open-widget" aria-label="Open countdown widget">
+        <button class="widget-launch" id="open-widget" title="Open countdown widget" aria-label="Open countdown widget">
           <svg class="widget-launch-icon" aria-hidden="true" width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="3" y="5" width="22" height="18" rx="4" stroke="currentColor" stroke-width="1.5"/><path d="M3 11h22M8 16h4m4 0h4M8 19h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
           <span class="widget-launch-copy"><strong>Open widget</strong><small>Your countdown, nearby</small></span><span class="widget-launch-arrow" aria-hidden="true">↗</span>
         </button>
@@ -315,6 +316,9 @@ function profileForm(guided = false) {
 function bindProfile(guided = false) {
   document.querySelector('#profile-form').onsubmit = async event => {
     event.preventDefault(); const form = event.currentTarget;
+    if (form.getAttribute('aria-busy') === 'true') return;
+    const button = form.querySelector('[type=submit]'), label = button.textContent;
+    let disabledControls = [];
     try {
       const data = new FormData(form), next = clone(state);
       next.birthday = data.get('birthday'); next.lifespan = Number(data.get('lifespan'));
@@ -323,11 +327,30 @@ function bindProfile(guided = false) {
       if (!Number.isInteger(next.lifespan) || next.lifespan < 1 || next.lifespan > 130) throw new Error('Choose a reference age between 1 and 130.');
       next.selected = 'life';
       if (guided && !replayStep) next.onboardingStep = 'calendar';
-      await save(next, '');
+      form.querySelector('.error').textContent = '';
+      form.setAttribute('aria-busy', 'true');
+      button.textContent = guided ? 'Generating timeline…' : 'Saving…';
+      disabledControls = [...form.querySelectorAll('input, button'), ...document.querySelectorAll('[data-guide-back]')].map(control => ({ control, disabled: control.disabled }));
+      disabledControls.forEach(({ control }) => { control.disabled = true; });
+      // Paint the acknowledgement before saving and constructing thousands of weeks.
+      if (!document.hidden) await new Promise(resolve => {
+        let frame;
+        const done = () => { clearTimeout(deadline); cancelAnimationFrame(frame); resolve(); };
+        const deadline = setTimeout(done, 100);
+        frame = requestAnimationFrame(() => { frame = requestAnimationFrame(done); });
+      });
+      // This transition renders its final destination below; save must not build it too.
+      await save(next, '', { render: false });
       if (guided) { if (replayStep) replayStep = 'calendar'; page = 'guide'; }
       else page = 'overview';
       render();
+      document.querySelector('main h1')?.focus({ preventScroll: true });
     } catch (error) { (document.querySelector('#profile-form .error') || form.querySelector('.error')).textContent = error.message; }
+    finally {
+      form.removeAttribute('aria-busy');
+      button.textContent = label;
+      disabledControls.forEach(({ control, disabled }) => { control.disabled = disabled; });
+    }
   };
 }
 function guideActivityInputs() {
@@ -345,7 +368,7 @@ function guideMarkup() {
   if (step === 'example') return `${progress}<header class="guide-header"><div class="eyebrow">Step back for a moment</div><h1 tabindex="-1">This is a whole life.</h1><p class="help">A lifetime can feel almost endless. Here it fits on one screen. Each row is a year, shown as 52 week blocks.</p></header><div class="actions guide-actions"><button data-guide-back="welcome">Back</button><button class="primary" id="guide-personalize">Where am I in this picture?</button></div>${timelineMarkup({ birthday: '2000-01-01' }, { id: 'life', start: '2000-01-01', end: '2090-01-01' }, { example: true })}`;
   if (step === 'moments') return `${progress}<section class="guide-moments"><header class="guide-header"><h1 tabindex="-1">There’s more to look forward to than a number of years.</h1><p class="help">See what your years ahead could hold when you count the experiences that matter to you.</p><p class="help moment-location-hint">You can revisit your saved reflections anytime in What matters.</p></header>${momentEntryMarkup(true)}</section>`;
   if (step === 'profile') return `${progress}<section class="guide-profile"><div class="eyebrow">Make the picture yours</div><h1 tabindex="-1">Where are you in your life?</h1><p class="help section-gap">Enter your birthday and choose a reference age. Your information stays on this computer.</p><div class="panel section-gap">${profileForm(true)}</div><button data-guide-back="example">Back</button></section>`;
-  if (step === 'widget') return `${progress}<section class="guide-widget"><div class="eyebrow">Keep the perspective nearby</div><h1 tabindex="-1">There is still a life ahead of you.</h1><p class="help section-gap">What would you like to give more of it to? Keep a little perspective nearby with your desktop countdown. Show it when you’re ready, then drag it somewhere comfortable.</p><div class="widget-lessons"><p><strong>Drag to move</strong><span>Use the background or the numbers.</span></p><p><strong>Click the numbers</strong><span>Cycle through calendar time, days, weeks, hours, and seconds.</span></p><p><strong>Gear for appearance</strong><span>Adjust the background and try an optional hourly effect.</span></p></div><div class="panel section-gap"><h2>Find it beside your Windows clock</h2><p class="help section-gap">Minimizing the full app keeps it on your taskbar. Closing it leaves Life Countdown running in the system tray beside the Windows clock. The widget stays out of the taskbar. Click the green clock icon to show the widget; right-click to open the full app or quit. Look under ^ if Windows hides the icon.</p></div><div class="actions guide-actions"><button data-guide-back="moments">Back</button><button class="primary" id="guide-show-widget">Show my widget</button><button id="guide-finish">Finish setup</button></div><p class="help section-gap">You can open the widget later from the sidebar. Find more controls in Help & tour, and Windows startup in Widget appearance.</p></section>`;
+  if (step === 'widget') return `${progress}<section class="guide-widget"><div class="eyebrow">Keep the perspective nearby</div><h1 tabindex="-1">There is still a life ahead of you.</h1><p class="help section-gap">What would you like to give more of it to? Keep a little perspective nearby with your desktop countdown. Show it when you’re ready, then drag it somewhere comfortable.</p><div class="widget-lessons"><p><strong>Drag to move</strong><span>Use the background or the numbers.</span></p><p><strong>Click the numbers</strong><span>Cycle through calendar time, days, weeks, hours, and seconds.</span></p><p><strong>Gear for appearance</strong><span>Adjust the background and try an optional hourly effect.</span></p></div><div class="panel section-gap"><h2>Find it beside your Windows clock</h2><p class="help section-gap">Minimizing the full app keeps it on your taskbar. Closing during setup exits the app. After finishing setup and launching your widget, closing the full app leaves it running in the system tray beside the Windows clock. The widget stays out of the taskbar. Click the green clock icon to show the widget; right-click to open the full app or quit. Look under ^ if Windows hides the icon.</p></div><div class="actions guide-actions"><button data-guide-back="moments">Back</button><button class="primary" id="guide-show-widget">Show my widget</button><button id="guide-finish">Finish setup</button></div><p class="help section-gap">You can open the widget later from the sidebar. Find more controls in Help & tour, and Windows startup in Widget appearance.</p></section>`;
   const period = periodFor({ ...state, selected: 'life' });
   const allocations = step === 'allocations';
   return `${progress}<header class="guide-header"><h1 tabindex="-1">${allocations ? 'Your everyday choices give time its shape.' : 'And this is where you are.'}</h1><p class="help">${allocations ? 'Enter your average sleep and work hours, including zero if appropriate. Watch how those commitments fill the time ahead.' : 'Grey weeks are already lived. The highlighted square is the present. What would you like to make room for? Your reference age is a planning horizon you can change.'}</p></header>
@@ -426,10 +449,6 @@ function bindMoments(guided) {
       }
     }
     render(); document.querySelector('[data-moment-example="' + button.dataset.momentExample + '"]')?.focus({preventScroll:true});
-  });
-  document.querySelector('#moment-more-ideas')?.addEventListener('click', () => {
-    momentPicker.expanded = !momentPicker.expanded;
-    render(); document.querySelector('#moment-more-ideas')?.focus({preventScroll:true});
   });
   document.querySelector('#moment-review')?.addEventListener('click', () => {
     if (!momentPicker.items.length) return;
@@ -546,9 +565,22 @@ function bindGuide() {
   document.querySelector('#guide-allocate')?.addEventListener('click', () => goGuide('allocations'));
   document.querySelector('#guide-personalize')?.addEventListener('click', () => goGuide('profile')); 
   document.querySelector('#guide-finish')?.addEventListener('click', () => goGuide('done'));
-  document.querySelector('#guide-show-widget')?.addEventListener('click', async () => {
-    try { await window.desktop.openWidget(); notify('Drag your widget to a comfortable spot. It stays available in the Windows tray.'); }
+  document.querySelector('#guide-show-widget')?.addEventListener('click', async event => {
+    const button = event.currentTarget;
+    if (button.disabled) return;
+    button.disabled = true;
+    try {
+      if (setupRequired() && !state.setupWidgetPulseShown) {
+        const next = clone(state); next.setupWidgetPulseShown = true;
+        await save(next, '', { render: false });
+        // Save before creating the widget so a settings refresh cannot interrupt its
+        // first animation. Preview opens it once and waits for the renderer to be ready.
+        await window.desktop.previewEffect('pulse');
+      } else await window.desktop.openWidget();
+      notify('Drag your widget to a comfortable spot.');
+    }
     catch (error) { notify(error.message); }
+    finally { button.disabled = false; }
   });
   if (document.querySelector('#profile-form')) bindProfile(true);
   bindLegend();
@@ -635,13 +667,13 @@ function bindGuide() {
 function helpMarkup() {
   return `<header class="topline"><div><div class="eyebrow">A little guidance, anytime</div><h1>Help & tour</h1><p class="help">Explore at your own pace. Your settings stay saved when you revisit the tour.</p></div></header><div class="actions"><button class="primary" id="start-tour">${guidePending() ? 'Continue setup' : 'Take the guided tour'}</button><button data-help-page="overview">View my calendar</button><button class="danger" id="reset-app">Reset & start fresh</button></div><div class="help-topics section-gap">
     <details open><summary>Read your life timeline</summary><p>Choose Life timeline above the grid in the full app. The expanded widget instead offers Time allocations and What matters. Rows follow actual years, with age labels down the side and week numbers across the top. The final block includes the extra one or two days of that year. Hover over a square for its dates and age. Custom periods use date labels for their year-long rows.</p><p>Grey weeks are already lived; the outlined square marks the present. Chapter bands show an illustrative path through childhood, school, training, working life, and retirement. Parenting or caregiving can overlap other chapters. These examples are not your personal history or predictions.</p><p>Your reference age is a planning horizon you can change. Time continues while the app is closed, using your computer's clock.</p></details>
-    <details><summary>Make room for what matters</summary><p>After allocating your time in setup, click an example bubble to immediately see its estimated dot count. Add a custom activity inline with its name and Add. Adjust How often and Until age on the left while the dots update on the right, then Save & continue. Enter 5 times every 1 year for skiing five times a year, or 1 time every 3 years for rarer trips. When adding activities from the What matters tab, More ideas reveals the full list of 24 examples, with Review selected for adding several at once. The app estimates future occasions from today until the end age for that activity. By default, it follows your reference age. Uncheck Use my reference age to set a custom Until age, such as skiing until 65. Each dot is one possible occasion; larger estimates show the first 120 dots and the remaining count. These are possibilities at your chosen frequency, not promises or scheduled events.</p><p>Skip this optional step or save several reflections. Open What matters in the sidebar to see your reflections with their estimates and dots. Add a reflection, edit its name, frequency, or end age, or remove it there. Custom end ages stay fixed when your reference age changes; these reflections do not allocate hours or change your categories.</p></details>
+    <details><summary>Make room for what matters</summary><p>After allocating your time in setup, click an example bubble to immediately see its estimated dot count. Add a custom activity inline with its name and Add. Adjust How often and Until age on the left while the dots update on the right, then Save & continue. Enter 5 times every 1 year for skiing five times a year, or 1 time every 3 years for rarer trips. When adding activities from the What matters tab, all examples appear together, with Review selected for adding several at once. The app estimates future occasions from today until the end age for that activity. By default, it follows your reference age. Uncheck Use my reference age to set a custom Until age, such as skiing until 65. Each dot is one possible occasion; larger estimates show the first 120 dots and the remaining count. These are possibilities at your chosen frequency, not promises or scheduled events.</p><p>Skip this optional step or save several reflections. Open What matters in the sidebar to see your reflections with their estimates and dots. Add a reflection, edit its name, frequency, or end age, or remove it there. Custom end ages stay fixed when your reference age changes; these reflections do not allocate hours or change your categories.</p></details>
     <details><summary>Read your time allocations</summary><p>Choose Time allocations to see equivalent hours grouped into categories. Each full square represents 168 hours. The top axis counts equivalent weeks; My Life has an age-equivalent reference ruler on the left. Crossed grey squares show time already lived. Colours collect future sleep, work, and other entered commitments. Empty squares show time not yet allocated; that may include commitments you have not entered.</p><p>Use Show or hide categories to change the view. Checkmarks indicate visible groups; hiding one keeps its hours and totals saved. Age-equivalent labels are a reference for the amount of time shown, not the ages when these grouped activities happen. The introduction preview keeps the same overall scale as you adjust sleep, work, and other activities.</p></details>
     <details><summary>Set your time and changing schedules</summary><p>In Your time, adjust your dates, add categories, and choose their colours. Enter sleep per night and other activities per week. Hours are averages; keep categories separate and their total within 168 hours per week.</p><p>A dated schedule change preserves earlier assumptions. For retirement, add a future change with work set to zero. Editing an existing schedule corrects that assumption.</p><button data-help-page="settings">Open Your time</button></details>
-    <details><summary>Explore five years, a decade, or your own period</summary><p>Select a period in the sidebar to see its grid and countdown. Add a time period for a goal or life chapter. Each period shares your categories and schedules. Click its countdown to change the time format; the widget follows your selected period.</p><button id="help-add-period">Add a time period</button></details>
+    <details><summary>Explore five years, a decade, or your own period</summary><p>Select a period in the sidebar to see its grid and countdown. Add a time period for a goal or life chapter. Each period shares your categories and schedules. Click its countdown to change the time format; the widget remembers its own period independently. Click its period name to choose My life, five years, a decade, or a custom period.</p><button id="help-add-period">Add a time period</button></details>
     <details><summary>Move and use your widget</summary><p>Drag the background or numbers to move it. Click the numbers without dragging to change the format. Grid expands the calendar; click again or press Escape to collapse. Counter only shrinks it to a strip; use the restore button to bring the controls back. Normal and Counter only views remember separate positions.</p><p>The ↗ arrow opens the full app. In Counter only mode, restore the controls first. The widget stays above ordinary windows and recovers its position if another window covers it.</p><button data-open-widget>Show widget</button></details>
     <details><summary>Adjust appearance and hourly reminders</summary><p>The widget’s gear opens Appearance. Background opacity fades the background while keeping numbers visible. At zero, surrounding details appear on hover or focus in the normal widget. Counter only always stays minimal.</p><p>Soft pulse and Light sweep preview when selected. On the hour they play three quiet cycles; the first spreads across the monitor’s usable desktop. Missed hours aren’t replayed. Choose Off to disable them. Back or Escape returns to the countdown.</p><button data-help-page="appearance">Open Widget appearance</button></details>
-    <details><summary>Find the tray, startup, and saved settings</summary><p>The full app appears on your taskbar, including when minimized. The widget stays out of the taskbar. Closing windows leaves the app running beside the Windows clock. A one-time tray notice helps you find it. Look under ^ for the green clock icon. Click to show the widget, double-click for the full app, or right-click to show, hide, open, or quit. Launching again brings back the existing widget.</p><p>Enable Launch when I sign in to Windows in Widget appearance. After setup, normal launches open only the widget. Your data stays on this computer; there is no account or cloud sync.</p></details>
+    <details><summary>Find the tray, startup, and saved settings</summary><p>The full app appears on your taskbar, including when minimized. The widget stays out of the taskbar. Once setup is complete and the widget has launched, closing windows leaves the app running beside the Windows clock. Closing during setup exits the app; saved setup progress remains available when you reopen it. A one-time tray notice helps you find it. Look under ^ for the green clock icon. Click to show the widget, double-click for the full app, or right-click to show, hide, open, or quit. Launching again brings back the existing widget.</p><p>Enable Launch when I sign in to Windows in Widget appearance. After setup, normal launches open only the widget. Your data stays on this computer; there is no account or cloud sync.</p></details>
     <details><summary>Why this app exists</summary><p>In the grand scheme of my life, how much does this matter? Is this how I want to spend this moment? What deserves my attention right now?</p><p>A reminder to begin something meaningful, let a small worry go, or enjoy exactly where you are. Inspired by Tim Urban’s Your Life in Weeks and 100 Blocks a Day on Wait But Why.</p></details></div>`;
 }
 function bindHelp() {
@@ -713,17 +745,23 @@ function bindGridView() {
 function observeTimeline() {
   const grid = document.querySelector('.timeline-grid');
   if (!grid) return;
+  observeGrid(grid);
+}
+function observeGrid(grid) {
   gridObserver?.disconnect();
-  gridObserver = new ResizeObserver(() => fitTimeline(grid));
+  gridObserver = new ResizeObserver(() => fitGrid(grid));
   gridObserver.observe(grid.closest('.grid-wrap'));
-  fitTimeline(grid);
+  fitGrid(grid);
+  // Recheck after the first frame: opening a window or rearranging navigation
+  // can settle its final dimensions after the initial synchronous layout.
+  requestAnimationFrame(() => { if (grid.isConnected) fitGrid(grid); });
 }
 function drawCurrentGrid(period) {
   if (document.querySelector('.timeline-grid')) observeTimeline();
   else if (period && document.querySelector('#grid')) drawGrid(calculate(state, period));
 }
 function chartMarkup(result, { stable = false } = {}) {
-  const ageReference = state.selected === 'life' && Boolean(state.birthday);
+  const ageReference = (isWidget ? widgetPeriodFor(state)?.id : state.selected) === 'life' && Boolean(state.birthday);
   return `<section class="panel time-chart ${stable ? 'stable-allocation' : ''}" data-fixed-columns="${isWidget || state.overviewLayout !== 'classic' ? 52 : ''}" data-age-reference="${ageReference ? state.lifespan : ''}" data-total-hours="${result.total}"><div class="panel-heading"><h2>Time allocations</h2><span class="help">${ageReference ? 'Age-equivalent reference · ' : ''}Each full square = 168 hours</span></div><div class="grid-wrap"><div class="allocation-board"><div class="allocation-axis-x" aria-label="Equivalent weeks across each row"></div><div class="week-grid" id="grid" role="img" aria-label="Visible week-equivalent squares, grouped by category"></div><div class="allocation-axis-y" aria-label="${ageReference ? 'Age-equivalent reference, not activity dates' : 'Equivalent weeks accumulated before each row'}"></div></div></div><p class="legend-heading">Show or hide categories</p><div class="legend">${result.groups.map(group => {
     const hidden = (state.hiddenGroups || []).includes(group.id);
     return `<button type="button" class="legend-item ${hidden ? 'legend-hidden' : ''}" data-group="${esc(group.id)}" aria-pressed="${!hidden}" title="${hidden ? 'Show' : 'Hide'} ${esc(group.name)} squares"><i class="swatch ${group.id === 'elapsed' ? 'swatch-crossed' : ''}" style="background:${safeColor(group.color)}"></i><span class="legend-copy"><strong>${hidden ? '○' : '✓'} ${esc(group.name)}${hidden ? ' · hidden' : ''}</strong><span>${number.format(group.hours / 168)} weeks · ${integer.format(group.hours)} hours</span></span></button>`;
@@ -787,10 +825,7 @@ function drawGrid(result) {
     return;
   }
   grid.classList.remove('grid-empty');
-  gridObserver?.disconnect();
-  gridObserver = new ResizeObserver(() => fitGrid(grid));
-  gridObserver.observe(grid.closest('.grid-wrap'));
-  fitGrid(grid);
+  observeGrid(grid);
 }
 function fitGrid(grid) {
   if (grid.classList.contains('timeline-grid')) { fitTimeline(grid); return; }
@@ -1052,7 +1087,9 @@ function openPeriod(existing) {
 }
 function deletePeriod(period) {
   confirmAction('Delete this period?', `Remove “${period.name}” from your saved periods? Your categories and schedules will stay saved.`, async () => {
-    const next = clone(state); next.periods = next.periods.filter(p => p.id !== period.id); next.selected = 'life'; await save(next);
+    const next = clone(state); next.periods = next.periods.filter(p => p.id !== period.id); next.selected = 'life';
+    if (next.widgetSelected === period.id) next.widgetSelected = 'life';
+    await save(next);
   });
 }
 function toggleWidgetGrid(expanded = !widgetExpanded) {
@@ -1096,10 +1133,39 @@ function renderWidgetAppearance() {
   bindAppearance();
   bindWidgetDragging();
 }
+function widgetPeriodSelectorMarkup(period) {
+  return `<button type="button" id="widget-period-selector" class="widget-period-selector" aria-haspopup="menu" aria-expanded="${widgetPeriodMenuOpen}" aria-label="${esc('Widget period: ' + period.name + '. Choose period')}" title="${esc(period.name + ' · Choose widget period')}" data-period-id="${esc(period.id)}"><span>${esc(period.name)}</span></button>`;
+}
+function bindWidgetPeriodSelector() {
+  const button = document.querySelector('#widget-period-selector');
+  if (!button) return;
+  button.onclick = async () => {
+    if (widgetPeriodMenuOpen) return;
+    widgetPeriodMenuOpen = true;
+    button.setAttribute('aria-expanded', 'true');
+    try {
+      const bounds = button.getBoundingClientRect();
+      const selected = await window.desktop.chooseWidgetPeriod({ x: bounds.left, y: bounds.bottom });
+      if (selected) {
+        const next = await window.desktop.read();
+        if (selected === 'life' || next.periods.some(period => period.id === selected)) {
+          next.widgetSelected = selected;
+          await save(next, '');
+        }
+      }
+    } catch (error) { notify(error.message); }
+    finally {
+      widgetPeriodMenuOpen = false;
+      const selector = document.querySelector('#widget-period-selector');
+      selector?.setAttribute('aria-expanded', 'false');
+      selector?.focus({ preventScroll: true });
+    }
+  };
+}
 function renderWidget() {
   const momentsScroll = document.querySelector('.widget-moments-list')?.scrollTop || 0;
   gridObserver?.disconnect();
-  const period = periodFor(state);
+  const period = widgetPeriodFor(state);
   if (widgetSettingsOpen) { renderWidgetAppearance(); return; }
   if (state.widgetCounterOnly) {
     root.innerHTML = `<section class="widget widget-minimal">${period ? clockButton(period.end) : '<span class="help">Choose a period in the app</span>'}<button id="restore-widget" class="restore-widget" title="Restore full widget" aria-label="Restore full widget">⤢</button></section>`;
@@ -1110,16 +1176,17 @@ function renderWidget() {
     fitCounterStrip();
     return;
   }
-  root.innerHTML = widgetExpanded ? `<section class="widget widget-expanded"><header class="widget-top widget-grid-toolbar"><strong title="${state.widgetGridView === 'moments' ? 'Your saved experiences' : period ? 'To ' + fmtDate(period.end) : ''}">${state.widgetGridView === 'moments' ? 'What matters' : esc(period?.name || 'Life Countdown')}</strong>${period ? gridViewMarkup() : ''}<div><button id="show-grid" title="Collapse grid (Escape)" aria-expanded="true" aria-controls="widget-grid">Collapse</button><button id="widget-settings-toggle" title="Appearance" aria-label="Widget settings" aria-expanded="false">&#9881;</button><button id="show-main" title="Open full app" aria-label="Open main window">&#8599;</button><button id="close-widget" title="Close widget" aria-label="Close widget">&#10005;</button></div></header><div id="widget-grid" class="widget-grid">${period ? state.widgetGridView === 'moments' ? momentsWidgetMarkup(state) : chartMarkup(calculate(state, period)) : '<p class="help">Open the app to choose a time period.</p>'}</div></section>` : `<section class="widget">
+  root.innerHTML = widgetExpanded ? `<section class="widget widget-expanded"><header class="widget-top widget-grid-toolbar">${period ? widgetPeriodSelectorMarkup(period) : '<strong>Life Countdown</strong>'}${period ? gridViewMarkup() : ''}<div><button id="show-grid" title="Collapse grid (Escape)" aria-expanded="true" aria-controls="widget-grid">Collapse</button><button id="widget-settings-toggle" title="Appearance" aria-label="Widget settings" aria-expanded="false">&#9881;</button><button id="show-main" title="Open full app" aria-label="Open main window">&#8599;</button><button id="close-widget" title="Close widget" aria-label="Close widget">&#10005;</button></div></header><div id="widget-grid" class="widget-grid">${period ? state.widgetGridView === 'moments' ? momentsWidgetMarkup(state) : chartMarkup(calculate(state, period)) : '<p class="help">Open the app to choose a time period.</p>'}</div></section>` : `<section class="widget">
     <div class="widget-top widget-detail"><p class="eyebrow">Life Countdown</p><div>
       <button id="show-grid" title="${widgetExpanded ? 'Collapse' : 'Expand'} weeks grid" aria-expanded="${widgetExpanded}" aria-controls="widget-grid">Grid ${widgetExpanded ? '▴' : '▾'}</button>
       <button id="widget-settings-toggle" title="Appearance" aria-label="Widget settings" aria-expanded="${widgetSettingsOpen}">⚙</button>
       <button id="show-main" aria-label="Open main window">↗</button><button id="close-widget" aria-label="Close widget">✕</button>
     </div></div>
-    <div class="widget-title-row widget-detail"><h2>${esc(period?.name || 'Set up your life calendar')}</h2>${period ? `<span class="widget-end-date">To ${fmtDate(period.end)}</span>` : ''}</div>
+    <div class="widget-title-row widget-detail"><h2>${period ? widgetPeriodSelectorMarkup(period) : 'Set up your life calendar'}</h2>${period ? `<span class="widget-end-date">To ${fmtDate(period.end)}</span>` : ''}</div>
     ${period ? `${clockButton(period.end)}<div class="widget-bar widget-detail">${calculate(state, period).groups.filter(group => !(state.hiddenGroups || []).includes(group.id)).map(group => `<span style="background:${safeColor(group.color)};flex:${group.hours}"></span>`).join('')}</div>` : '<p class="help widget-detail">Open the app to choose a time period.</p>'}
   </section>`;
   document.querySelector('#show-main').onclick = () => window.desktop.showMain();
+  bindWidgetPeriodSelector();
   const minimalButton = document.createElement('button');
   minimalButton.id = 'counter-only';
   minimalButton.textContent = 'Counter only';
@@ -1171,7 +1238,17 @@ try {
     else if (!state.birthday) page = 'overview';
   }
   render();
-  window.desktop.onChange(next => { state = next; render(); });
+  document.fonts.ready.then(() => {
+    const grid = document.querySelector('#grid');
+    if (grid) fitGrid(grid);
+  });
+  window.desktop.onChange(next => {
+    // Keep main-window forms and scroll position intact when only the widget's
+    // independent period changes, while retaining it for subsequent saves.
+    const onlyWidgetPeriodChanged = !isWidget && JSON.stringify({ ...state, widgetSelected: next.widgetSelected }) === JSON.stringify(next);
+    state = next;
+    if (!onlyWidgetPeriodChanged) render();
+  });
   window.desktop.onNavigate(destination => {
     if (!isWidget && destination === 'moments' && !setupRequired()) { momentDraft = null; momentPicker = null; navigatePage('moments'); }
   });

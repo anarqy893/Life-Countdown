@@ -5,7 +5,7 @@ const path = require('node:path');
 const assert = require('node:assert/strict');
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 const factor = Number(process.argv[2] || 1);
-app.disableHardwareAcceleration();
+if (process.env.LIFE_TEST_GPU !== '1') app.disableHardwareAcceleration();
 app.commandLine.appendSwitch('force-device-scale-factor', String(factor));
 (async () => {
   const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'life-layout-'));
@@ -38,6 +38,18 @@ app.commandLine.appendSwitch('force-device-scale-factor', String(factor));
     const content=document.querySelector('main');
     return grid.right<=wrap.right+2 && grid.bottom<=wrap.bottom+2 && grid.width<=wrap.width && grid.height<=wrap.height && content.scrollHeight<=content.clientHeight+1;
   })()`);
+  const crispCells=async()=>{
+    const cells=await run(`(()=>{
+      const scale=devicePixelRatio,grid=document.querySelector('#grid'),first=grid.firstElementChild.getBoundingClientRect();
+      const last=grid.lastElementChild.getBoundingClientRect();
+      return {width:first.width,height:first.height,lastWidth:last.width,lastHeight:last.height,
+        left:first.left*scale,top:first.top*scale,lastLeft:last.left*scale,lastTop:last.top*scale};
+    })()`);
+    assert.ok(Math.abs(cells.width-cells.height)<.02&&Math.abs(cells.lastWidth-cells.lastHeight)<.02,`cells stay square: ${JSON.stringify(cells)}`);
+    assert.ok(['left','top','lastLeft','lastTop'].every(key=>Math.abs(cells[key]-Math.round(cells[key]))<.05),`cell edges stay on physical pixels: ${JSON.stringify(cells)}`);
+  };
+  await run('new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
+  await crispCells();
   assert.ok(await run('!!document.querySelector(".nav-collapsed")'));
   const ageLabels = await run('document.querySelector(".allocation-axis-y").textContent');
   for(const size of [[Math.min(1380,area.width-40),Math.min(920,area.height-40)],[900,680],[1100,760]]){
@@ -46,9 +58,16 @@ app.commandLine.appendSwitch('force-device-scale-factor', String(factor));
     assert.equal(await run('document.querySelector(".allocation-axis-x span:last-child").textContent'),'52');
     assert.equal(await run('document.querySelector(".allocation-axis-y").textContent'),ageLabels,'age labels stay the same while resizing');
     assert.ok(await fits(),`grid fits ${size} at ${factor} scaling`);
+    await crispCells();
   }
   main.setSize(Math.min(1380,area.width-40),Math.min(920,area.height-40)); await pause(200);
   await capture('52-week');
+  await run('document.querySelector("[data-grid-view=timeline]").click()');
+  await until(()=>run('!!document.querySelector(".timeline-grid")'));
+  await run('new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
+  await crispCells();
+  await run('document.querySelector("[data-grid-view=allocations]").click()');
+  await until(()=>run('!!document.querySelector(".allocation-board")'));
   for (const [tab, ready] of [['what-matters','.moments-empty'], ['settings','#category-form'], ['appearance','[data-opacity]'], ['help','.help-topics']]) {
     await run('document.querySelector("#navigation-toggle").click()');
     await until(() => run('!!document.querySelector(".layout:not(.nav-collapsed)")'));
@@ -76,6 +95,8 @@ app.commandLine.appendSwitch('force-device-scale-factor', String(factor));
   await until(() => run('!!document.querySelector(".nav-collapsed")'));
   await run('location.reload()');
   await until(() => run('!!document.querySelector(".nav-collapsed #grid")').catch(() => false));
+  await run('new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
+  await crispCells();
   assert.equal(await columns(),52,'layout preference survives reload');
   await pause(200);
   const gridBefore = await run('({width:document.querySelector("#grid").offsetWidth,height:document.querySelector("#grid").offsetHeight})');

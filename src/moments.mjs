@@ -33,9 +33,9 @@ export const MOMENT_EXAMPLES = [
   'Beach trips', 'Visiting a favourite city', 'Hiking a favourite trail',
   'Canoeing / kayaking trips', 'Visiting parents', 'Weekends with siblings',
   'Birthday celebrations', 'Holiday gatherings', 'Anniversary celebrations',
-  'Annual trips with friends', 'Concerts', 'Theatre shows', 'Festivals',
+  'Trips with friends', 'Concerts', 'Theatre shows', 'Festivals',
   'Sporting events', 'Weekend getaways', 'Special date nights',
-  'Trips with your children', 'Celebrating with grandparents'
+  'Trips with your children', 'Celebrating with grandparents', 'Vacation'
 ];
 
 function frequencyLabel(moment) {
@@ -70,7 +70,7 @@ function savedMomentsMarkup(state, guided) {
   return '<section class="moment-saved" aria-label="Saved reflections"><h2>Saved reflections</h2>' + state.moments.map(item => '<div><span>' + esc(item.name) + '</span><button class="subtle" data-moment-edit="' + esc(item.id) + '" aria-label="Edit ' + esc(item.name) + '">Edit</button><button class="subtle" data-moment-remove="' + esc(item.id) + '" aria-label="Remove ' + esc(item.name) + '">Remove</button></div>').join('') + '</section>';
 }
 function momentNavigationMarkup(state, guided) {
-  return '<div class="actions guide-actions">' + (guided ? '<button data-guide-back="allocations">Back</button><button id="moment-skip">' + (state.moments?.length ? 'Continue' : 'Skip for now') + '</button>' : '<button id="moments-back">Back to reflections</button>') + '</div>';
+  return '<div class="actions guide-actions">' + (guided ? '<button data-guide-back="allocations">Back</button><button id="moment-skip">' + (state.moments?.length ? 'Continue' : 'Skip for now') + '</button>' : '<button id="moments-back">Back to What matters</button>') + '</div>';
 }
 export function momentsLivePreviewMarkup(state, items) {
   if (!items.length) return '<div class="occasion-empty"><div class="eyebrow">Make it personal</div><h2>What would you like more of?</h2><p>Click an example or add your own to see its dots straight away. Try changing the frequency or end age and watch the possibilities change.</p></div>';
@@ -88,8 +88,8 @@ export function momentsPickerMarkup(state, picker, guided) {
   const items = picker?.items || [];
   return '<section class="moment-picker panel" id="moment-picker"><h2>Choose a few things you love.</h2><p class="help">Think of the trips, traditions, and people you want to keep making room for. Choose several, then enter how often each happens: for example, 5 occasions every 1 year, or 1 every 3 years.</p><div class="moment-examples" aria-label="Choose meaningful experiences">' + MOMENT_EXAMPLES.map((name, index) => {
     const selected = items.some(item => item.name === name);
-    return '<button type="button" class="subtle" data-moment-example="' + index + '" aria-pressed="' + selected + '" ' + (index >= 6 && !picker?.expanded && !selected ? 'hidden' : '') + '>' + (selected ? '<span aria-hidden="true">&#10003; </span>' : '') + esc(name) + '</button>';
-  }).join('') + '</div><div class="moment-picker-options"><button class="subtle" id="moment-more-ideas" aria-expanded="' + Boolean(picker?.expanded) + '">' + (picker?.expanded ? 'Fewer ideas' : 'More ideas…') + '</button><button class="subtle" id="moment-own">+ Add your own</button></div><div class="actions"><button class="primary" id="moment-review" ' + (items.length ? '' : 'disabled') + '>Review selected (' + items.length + ')</button></div></section>' + savedMomentsMarkup(state, guided) + momentNavigationMarkup(state, guided);
+    return '<button type="button" class="subtle" data-moment-example="' + index + '" aria-pressed="' + selected + '">' + (selected ? '<span aria-hidden="true">&#10003; </span>' : '') + esc(name) + '</button>';
+  }).join('') + '</div><div class="moment-picker-options"><button class="subtle" id="moment-own">+ Add your own</button></div><div class="actions"><button class="primary" id="moment-review" ' + (items.length ? '' : 'disabled') + '>Review selected (' + items.length + ')</button></div></section>' + savedMomentsMarkup(state, guided) + momentNavigationMarkup(state, guided);
 }
 export function momentsEditorMarkup(state, draft, guided) {
   const value = draft || { name: '', times: 1, years: 1 };

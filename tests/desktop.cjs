@@ -148,7 +148,7 @@ app.on('before-quit', () => { console.error('Desktop check quit before completio
     assert.equal(await widget.webContents.executeJavaScript('document.querySelector("[data-clock]").dataset.format'), format, 'dragging does not change counter format');
     widget.setBounds(originalWidgetBounds);
   }
-  assert.equal(await widget.webContents.executeJavaScript('document.querySelector("h2").textContent'), 'My forties');
+  assert.equal(await widget.webContents.executeJavaScript('document.querySelector("h2").textContent'), 'My life');
   assert.equal(await widget.webContents.executeJavaScript('!!document.querySelector("[data-opacity]")'), false, 'opacity slider is tucked away');
   widget.showInactive();
   async function openAppearance() {
@@ -379,11 +379,12 @@ app.on('before-quit', () => { console.error('Desktop check quit before completio
   await until('document.querySelector("[data-opacity]").value === "60"', 'save opacity');
   await run('document.querySelector("[data-period=five]").click()');
   for (let i = 0; i < 100; i++) {
-    if (await widget.webContents.executeJavaScript('document.querySelector("h2").textContent === "Next five years"')) break;
+    if ((await widget.webContents.executeJavaScript('window.desktop.read()')).selected === 'five') break;
     await new Promise(resolve => setTimeout(resolve, 100));
   }
-  assert.equal(await widget.webContents.executeJavaScript('document.querySelector("h2").textContent'), 'Next five years');
+  assert.equal(await widget.webContents.executeJavaScript('document.querySelector("h2").textContent'), 'My life', 'main period navigation leaves the widget unchanged');
   const daysBefore = await run('Number(document.querySelector("[data-clock] b").textContent.replace(/\\D/g, ""))');
+  const widgetDaysBefore = await widget.webContents.executeJavaScript('Number(document.querySelector("[data-clock] b").textContent.replace(/\\D/g, ""))');
   const elapsedBefore = await run('document.querySelector(".stat strong").textContent');
   const advanceClock = `(() => { const OriginalDate = Date; window.Date = class extends OriginalDate { constructor(...args) { super(...(args.length ? args : [OriginalDate.now() + 7 * 86400000])); } static now() { return OriginalDate.now() + 7 * 86400000; } }; })()`;
   await run(advanceClock);
@@ -391,7 +392,7 @@ app.on('before-quit', () => { console.error('Desktop check quit before completio
   powerMonitor.emit('resume');
   await until(`Number(document.querySelector('[data-clock] b').textContent.replace(/\\D/g, '')) === ${daysBefore - 7}`, 'wake catches up countdown');
   assert.notEqual(await run('document.querySelector(".stat strong").textContent'), elapsedBefore);
-  assert.equal(await widget.webContents.executeJavaScript('Number(document.querySelector("[data-clock] b").textContent.replace(/\\D/g, ""))'), daysBefore - 7);
+  assert.equal(await widget.webContents.executeJavaScript('Number(document.querySelector("[data-clock] b").textContent.replace(/\\D/g, ""))'), widgetDaysBefore - 7);
   await run('document.querySelector("#settings").click(); document.querySelector("[name=lifespan]").value = "99"');
   powerMonitor.emit('unlock-screen');
   await new Promise(resolve => setTimeout(resolve, 100));

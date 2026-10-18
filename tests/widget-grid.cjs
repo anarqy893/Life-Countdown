@@ -65,7 +65,7 @@ app.commandLine.appendSwitch('force-device-scale-factor', String(factor));
   assert.equal(await run('getComputedStyle(document.querySelector("#grid")).gridTemplateColumns.split(" ").length'),52,'widget keeps 52 columns even with the original main layout');
   assert.ok(await run(`(async()=>{
     const {calculate,periodFor,squareSegments}=await import('./src/model.mjs');
-    const state=await window.desktop.read(),result=calculate(state,periodFor(state));
+    const state=await window.desktop.read(),result=calculate(state,periodFor({...state,selected:state.widgetSelected}));
     const groups=result.groups.filter(group=>!(state.hiddenGroups||[]).includes(group.id));
     const total=groups.reduce((sum,group)=>sum+group.hours,0);
     const cells=[...document.querySelectorAll('#grid .week')];
@@ -121,7 +121,7 @@ app.commandLine.appendSwitch('force-device-scale-factor', String(factor));
   await run('(async()=>{const next=await window.desktop.read();next.lifespan=130;await window.desktop.save(next);})()');
   await run('location.reload()');await visible('#grid .week');await pause(150);
   assert.ok(await fits(),'130-year allocation horizon fits without overflow');
-  await run('(async()=>{const next=await window.desktop.read();next.selected="five";await window.desktop.save(next);})()');
+  await run('(async()=>{const next=await window.desktop.read();next.widgetSelected="five";await window.desktop.save(next);})()');
   await run('location.reload()');await visible('#grid .week');await pause(150);
   assert.ok(await fits(),'custom period grid fits');
   await visible('.allocation-axis-x');await pause(150);

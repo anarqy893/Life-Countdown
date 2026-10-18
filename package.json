@@ -16,7 +16,11 @@
     "test:taskbar": "node launch.cjs tests/taskbar.cjs",
     "test:moments": "node launch.cjs tests/moments.cjs",
     "test:batch": "node launch.cjs tests/moments-batch.cjs",
-    "test:widget-grid": "node launch.cjs tests/widget-grid.cjs"
+    "test:widget-grid": "node launch.cjs tests/widget-grid.cjs",
+    "test:main-window": "node launch.cjs tests/main-window.cjs",
+    "test:timeline-loading": "node launch.cjs tests/timeline-loading.cjs",
+    "test:signup-pulse": "node launch.cjs tests/signup-widget-pulse.cjs",
+    "test:widget-periods": "node launch.cjs tests/widget-periods.cjs"
   },
   "devDependencies": {
     "electron": "^44.8.0"

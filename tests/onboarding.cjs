@@ -7,7 +7,8 @@ const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 const factor = Number(process.argv[2] || 1);
 app.disableHardwareAcceleration();
 app.commandLine.appendSwitch('force-device-scale-factor', String(factor));
-app.on('before-quit', () => { console.error('Onboarding check quit before completion'); app.exit(1); });
+const unexpectedQuit = () => { console.error('Onboarding check quit before completion'); app.exit(1); };
+app.on('before-quit', unexpectedQuit);
 
 (async () => {
   const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'life-onboarding-'));
@@ -52,14 +53,20 @@ app.on('before-quit', () => { console.error('Onboarding check quit before comple
     assert.equal(BrowserWindow.getAllWindows().length, 1, 'unfinished setup launches only the main window');
     app.emit('second-instance'); await pause(100);
     assert.equal(BrowserWindow.getAllWindows().length, 1, 'repeated launch stays in setup');
-    main.close(); await until(() => BrowserWindow.getAllWindows().length === 0, 'closing setup');
-    app.emit('second-instance');
-    await until(() => { main = BrowserWindow.getAllWindows()[0]; return main; }, 'reopening setup');
-    await visible('#guide-hours');
-    console.log('Onboarding resume check passed: startup and repeated launches restore unfinished setup.');
-    app.exit(0); return;
+    app.removeListener('before-quit', unexpectedQuit);
+    app.once('will-quit', () => {
+      try {
+        assert.equal(BrowserWindow.getAllWindows().length, 0);
+        console.log('Onboarding resume check passed: startup restores unfinished setup and closing exits fully.');
+      } catch (error) { console.error(error); app.exit(1); }
+    });
+    main.close(); return;
   }
   await visible('#setup');
+  await until(() => main.isMaximized(), 'first setup maximized');
+  assert.equal(main.isFullScreen(), false);
+  main.unmaximize();
+  await until(() => !main.isMaximized(), 'restore default setup size');
   assert.equal(BrowserWindow.getAllWindows().length, 1);
   assert.equal(await run('document.querySelectorAll(".welcome-questions li").length'), 3);
   assert.equal(await run('!!document.querySelector(".sidebar")'), false);
@@ -148,8 +155,11 @@ app.on('before-quit', () => { console.error('Onboarding check quit before comple
   assert.ok(await run('document.querySelector("#guide-finish").getBoundingClientRect().bottom <= innerHeight'), 'setup completion is visible without scrolling');
   assert.equal(BrowserWindow.getAllWindows().length, 1, 'widget waits for an explicit request');
   await click('#guide-show-widget');
-  await until(() => BrowserWindow.getAllWindows().length === 2, 'optional widget');
-  BrowserWindow.getAllWindows().find(w => w !== main).hide();
+  await until(() => BrowserWindow.getAllWindows().some(w => w.webContents.getURL().includes('widget=1')), 'optional widget');
+  const setupWidget = BrowserWindow.getAllWindows().find(w => w.webContents.getURL().includes('widget=1'));
+  await until(() => setupWidget.webContents.executeJavaScript('!!document.querySelector(".hourly-pulse")').catch(() => false), 'first launch pulse');
+  await setupWidget.webContents.executeJavaScript('window.desktop.previewEffect("off")');
+  setupWidget.hide();
   await click('#guide-finish'); await visible('[data-clock]');
   assert.equal((await saved()).onboardingStep, 'done');
   assert.equal((await saved()).gridView, 'allocations', 'setup finishes on time allocations');

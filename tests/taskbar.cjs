@@ -32,10 +32,16 @@ Object.defineProperty(electronForApp, 'Tray', { value: new Proxy(Tray, {
   const noticePath = path.join(temporary, 'tray-introduction.json');
   const returning = process.argv.includes('returning');
   const widgetLaunch = process.argv.includes('widget');
+  const setupPreview = process.argv.includes('setup-preview') || process.argv.includes('setup-preview-complete');
+  const setupCompleteOnly = process.argv.includes('setup-complete');
   if (returning) await fs.writeFile(noticePath, JSON.stringify({ shown: true }));
   if (widgetLaunch) {
     const { defaults } = await import('../src/model.mjs');
     await fs.writeFile(path.join(temporary, 'life-countdown.json'), JSON.stringify({ ...defaults(), birthday: '1990-04-12', onboardingStep: 'done', setupHoursConfirmed: true }));
+  }
+  if (setupPreview || setupCompleteOnly) {
+    const { defaults } = await import('../src/model.mjs');
+    await fs.writeFile(path.join(temporary, 'life-countdown.json'), JSON.stringify({ ...defaults(), birthday: '1990-04-12', onboardingStep: 'widget', setupHoursConfirmed: true }));
   }
   const Module = require('node:module'), originalLoad = Module._load;
   Module._load = function(request, parent, ...args) {
@@ -60,16 +66,37 @@ Object.defineProperty(electronForApp, 'Tray', { value: new Proxy(Tray, {
     main = mainWindow();
   } else {
     main = mainWindow();
-    await until(() => main.webContents.executeJavaScript('!!document.querySelector("#setup")').catch(() => false), 'setup loaded');
+    await until(() => main.webContents.executeJavaScript('!!document.querySelector("#setup, #guide-finish")').catch(() => false), 'setup loaded');
     assert.equal(balloons.length, 0, 'no tray notice while full app is open');
+    assert.equal(nativeTray, undefined, 'unfinished setup has no tray icon');
+    if (setupPreview) {
+      await main.webContents.executeJavaScript('window.desktop.openWidget()');
+      await until(() => BrowserWindow.getAllWindows().length === 2, 'setup preview');
+      assert.equal(nativeTray, undefined, 'preview alone does not enable the tray');
+    }
+    if (setupCompleteOnly || process.argv.includes('setup-preview-complete')) {
+      await main.webContents.executeJavaScript('(async()=>{const state=await window.desktop.read();state.onboardingStep="done";await window.desktop.save(state);})()');
+    }
   }
   assert.equal(windowOptions.get(main).skipTaskbar, false, 'full app has a taskbar button');
   main.minimize();
   await until(() => main.isMinimized(), 'minimize full app');
   assert.equal(main.isDestroyed(), false, 'minimize keeps the full app window available');
   assert.equal(balloons.length, widgetLaunch && !returning ? 1 : 0, 'minimize does not produce a tray notice');
-  nativeTray.emit('double-click');
+  if (nativeTray) nativeTray.emit('double-click');
+  else main.restore();
   await until(() => !main.isMinimized() && main.isVisible(), 'restore full app from tray');
+  if (!nativeTray) {
+    app.once('will-quit', () => {
+      try {
+        assert.equal(BrowserWindow.getAllWindows().length, 0, 'closing setup also closes any widget preview');
+        assert.equal(balloons.length, 0, 'closing setup produces no tray notice');
+        console.log(`Setup close check passed: ${setupPreview ? 'with widget preview' : setupCompleteOnly ? 'completed without widget launch' : 'initial introduction'} exits fully without a tray.`);
+      } catch (error) { console.error(error); app.exit(1); }
+    });
+    main.close();
+    return;
+  }
   main.close();
   await until(() => main.isDestroyed(), 'close full app');
   assert.equal(balloons.length, returning ? 0 : 1, 'notice appears once when only the tray/widget remains');

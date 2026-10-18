@@ -1,7 +1,20 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { countdownParts } from '../src/model.mjs';
-import { defaults, addYears, dateValue, calculate, squareSegments, validateSchedule, countdown } from '../src/model.mjs';
+import { defaults, addYears, dateValue, calculate, squareSegments, validateSchedule, countdown, widgetPeriodFor } from '../src/model.mjs';
+
+test('widget periods remain independent and safely fall back for older or deleted selections', () => {
+  const state = { ...defaults(), birthday: '1989-08-03', selected: 'decade' };
+  delete state.widgetSelected;
+  assert.equal(widgetPeriodFor(state).id, 'life');
+  state.widgetSelected = 'five';
+  assert.equal(widgetPeriodFor(state).id, 'five');
+  assert.equal(state.selected, 'decade');
+  state.periods = state.periods.filter(period => period.id !== 'five');
+  assert.equal(widgetPeriodFor(state).id, 'life');
+  state.birthday = '';
+  assert.equal(widgetPeriodFor(state), null);
+});
 
 function fixture() {
   const state = defaults();

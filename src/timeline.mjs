@@ -85,10 +85,13 @@ export function fitTimeline(grid) {
   const cell = Math.max(1 / scale, Math.floor(Math.min(14, (wrap.clientHeight - 28) / rows - gap, (wrap.clientWidth - 65 - reserve) / 52 - gap) * scale) / scale);
   board.style.setProperty('--cell', `${cell}px`);
   board.style.setProperty('--gap', `${gap}px`);
-  grid.style.setProperty('--grid-stroke', `${.5 / scale}px`);
+  grid.style.setProperty('--grid-stroke', `${1 / scale}px`);
   const interval = cell + gap < 2.5 ? 10 : 5;
   board.querySelectorAll('.timeline-age').forEach((label, index) => {
     label.textContent = index % interval === 0 || index === rows - 1 && index % interval > interval / 2 ? label.getAttribute('aria-label') : '';
   });
   board.classList.toggle('timeline-compact', cell + gap < 3);
+  board.style.transform = 'none';
+  const bounds = grid.getBoundingClientRect();
+  board.style.transform = `translate(${Math.round(bounds.left * scale) / scale - bounds.left}px,${Math.round(bounds.top * scale) / scale - bounds.top}px)`;
 }

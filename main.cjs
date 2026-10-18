@@ -14,9 +14,20 @@ let onboardingWidgetReady = false;
 app.on('second-instance', () => { if (widgetSessionReady) { if (onboardingInProgress) showMain(); else createWidget(); } });
 
 let mainWindow, widgetWindow, tray;
+let widgetLaunched = false;
 let quitting = false, trayIntroductionShown = false;
+function ensureTray() {
+  if (tray || quitting || onboardingInProgress || !widgetLaunched) return;
+  tray = require('./tray.cjs')(electron, {
+    showWidget: createWidget,
+    hideWidget: () => { stopDesktopEffect(); widgetWindow?.hide(); introduceTray(); },
+    showMain,
+    quit: () => app.quit()
+  });
+  tray.on('balloon-click', showMain);
+}
 function introduceTray() {
-  if (process.platform !== 'win32' || quitting || !tray || tray.isDestroyed() || mainWindow || trayIntroductionShown) return;
+  if (process.platform !== 'win32' || quitting || onboardingInProgress || !tray || tray.isDestroyed() || mainWindow || trayIntroductionShown) return;
   const noticePath = path.join(app.getPath('userData'), 'tray-introduction.json');
   if (fsSync.existsSync(noticePath)) { trayIntroductionShown = true; return; }
   try {
@@ -81,22 +92,72 @@ function raiseWidget() {
 }
 
 function createMain() {
-  const area = screen.getPrimaryDisplay().workArea;
-  const width = Math.min(1380, area.width - 40), height = Math.min(920, area.height - 40);
-  mainWindow = new BrowserWindow({
-    width, height, minWidth: Math.min(900, width), minHeight: Math.min(680, height),
-    x: area.x + Math.floor((area.width - width) / 2), y: area.y + Math.floor((area.height - height) / 2),
-    backgroundColor: '#111719', title: 'Life Countdown', skipTaskbar: false,
+  let area = screen.getPrimaryDisplay().workArea;
+  let width = Math.min(1380, area.width - 40), height = Math.min(920, area.height - 40);
+  let bounds = { width, height,
+    x: area.x + Math.floor((area.width - width) / 2), y: area.y + Math.floor((area.height - height) / 2) };
+  let maximized = onboardingInProgress;
+  const placementPath = path.join(app.getPath('userData'), 'main-window.json');
+  try {
+    const saved = JSON.parse(fsSync.readFileSync(placementPath, 'utf8'));
+    if (['x', 'y', 'width', 'height'].every(key => Number.isInteger(saved.bounds?.[key])) && saved.bounds.width > 0 && saved.bounds.height > 0 && typeof saved.maximized === 'boolean') {
+      area = screen.getDisplayMatching(saved.bounds).workArea;
+      bounds = constrainWidgetBounds({ ...saved.bounds,
+        width: Math.max(Math.min(900, area.width), saved.bounds.width),
+        height: Math.max(Math.min(680, area.height), saved.bounds.height) }, area);
+      maximized = saved.maximized;
+    }
+  } catch { /* New or unavailable placement data uses the current default size. */ }
+  const window = new BrowserWindow({
+    ...bounds, minWidth: Math.min(900, bounds.width), minHeight: Math.min(680, bounds.height),
+    backgroundColor: '#111719', title: 'Life Countdown', skipTaskbar: false, show: false,
     webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false }
   });
-  mainWindow.setMenuBarVisibility(false);
-  mainWindow.loadFile(path.join(__dirname, 'index.html'));
-  mainWindow.on('closed', () => { mainWindow = null; introduceTray(); });
+  mainWindow = window;
+  let placementTimer, presented = false;
+  const rememberPlacement = () => {
+    clearTimeout(placementTimer);
+    if (window.isDestroyed() || !presented) return;
+    // Minimize must preserve whether the user was maximized before minimizing.
+    if (!window.isMinimized()) maximized = window.isMaximized();
+    try {
+      fsSync.writeFileSync(placementPath + '.tmp', JSON.stringify({ bounds: window.getNormalBounds(), maximized }));
+      fsSync.renameSync(placementPath + '.tmp', placementPath);
+    } catch (error) { console.error('Could not save main window size:', error.message); }
+  };
+  const queuePlacement = () => {
+    clearTimeout(placementTimer);
+    placementTimer = setTimeout(rememberPlacement, 200);
+  };
+  window.setMenuBarVisibility(false);
+  window.once('ready-to-show', () => {
+    presented = true;
+    if (maximized) window.maximize();
+    window.show();
+  });
+  for (const event of ['move', 'resize']) window.on(event, queuePlacement);
+  window.on('maximize', () => { maximized = true; queuePlacement(); });
+  window.on('unmaximize', () => { maximized = false; queuePlacement(); });
+  let closeQuitRequested = false;
+  window.on('close', event => {
+    rememberPlacement();
+    if (!quitting && (onboardingInProgress || !tray)) {
+      event.preventDefault();
+      // Finish pending saves before exiting; even a setup widget preview must quit.
+      if (!closeQuitRequested) {
+        closeQuitRequested = true;
+        writeQueue.then(() => app.quit());
+      }
+    }
+  });
+  window.on('closed', () => { clearTimeout(placementTimer); mainWindow = null; introduceTray(); });
+  window.loadFile(path.join(__dirname, 'index.html'));
 }
 
 function createWidget() {
   if (onboardingInProgress && !onboardingWidgetReady) { showMain(); return; }
   if (widgetWindow) {
+    ensureTray();
     if (widgetWindow.isMinimized()) widgetWindow.restore();
     widgetWindow.show();
     raiseWidget();
@@ -116,6 +177,8 @@ function createWidget() {
     title: 'Life Countdown widget',
     webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false }
   });
+  widgetLaunched = true;
+  ensureTray();
   for (const event of ['show', 'restore', 'blur', 'leave-full-screen']) widgetWindow.on(event, raiseWidget);
   widgetWindow.on('always-on-top-changed', (_event, onTop) => { if (!onTop) raiseWidget(); });
   // Other apps can change the native stacking without an Electron event.
@@ -242,6 +305,7 @@ ipcMain.handle('settings:write', async (event, state) => {
     await fs.rename(destination + '.tmp', destination);
     onboardingInProgress = !state.birthday || Boolean(state.onboardingStep && state.onboardingStep !== 'done');
     onboardingWidgetReady = state.onboardingStep === 'widget' && state.setupHoursConfirmed === true;
+    ensureTray();
     for (const window of BrowserWindow.getAllWindows()) {
       if (window.webContents.id !== event.sender.id) window.webContents.send('settings:changed', state);
     }
@@ -281,6 +345,9 @@ ipcMain.handle('settings:reset', async event => {
     pendingEffect = null;
     onboardingInProgress = true;
     onboardingWidgetReady = false;
+    widgetLaunched = false;
+    tray?.destroy();
+    tray = null;
     return fresh;
   });
   writeQueue = operation.catch(() => {});
@@ -288,6 +355,40 @@ ipcMain.handle('settings:reset', async event => {
   finally { resettingSettings = false; }
 });
 ipcMain.handle('widget:open', createWidget);
+ipcMain.handle('widget:choose-period', async (event, point) => {
+  await writeQueue;
+  const window = widgetWindow;
+  if (!window || window.isDestroyed() || event.sender !== window.webContents) return null;
+  const state = JSON.parse(await fs.readFile(settingsPath(), 'utf8'));
+  const { widgetPeriodFor } = await import('./src/model.mjs');
+  if (window.isDestroyed()) return null;
+  const selected = widgetPeriodFor(state)?.id;
+  return new Promise((resolve, reject) => {
+    let finished = false, menu;
+    const finish = (id, error) => {
+      if (finished) return;
+      finished = true;
+      window.removeListener('closed', closed);
+      if (error) reject(error); else resolve(id);
+    };
+    const closed = () => { menu?.closePopup(); finish(null); };
+    menu = electron.Menu.buildFromTemplate([
+      { id: 'life', name: 'My life', enabled: Boolean(state.birthday) },
+      ...state.periods.map(period => ({ id: period.id, name: period.name, enabled: true }))
+    ].map(period => ({
+      label: period.name, type: 'radio', checked: period.id === selected, enabled: period.enabled,
+      click: () => finish(period.id)
+    })));
+    const bounds = window.getContentBounds();
+    const position = Number.isFinite(point?.x) && Number.isFinite(point?.y) ? {
+      x: Math.max(0, Math.min(bounds.width - 1, Math.round(point.x))),
+      y: Math.max(0, Math.min(bounds.height - 1, Math.round(point.y)))
+    } : {};
+    window.once('closed', closed);
+    try { menu.popup({ window, ...position, callback: () => finish(null) }); }
+    catch (error) { finish(null, error); }
+  });
+});
 ipcMain.handle('startup:read', () => startup.read());
 ipcMain.handle('startup:set', (_event, enabled) => {
   return startup.set(enabled);
@@ -353,8 +454,10 @@ ipcMain.on('widget:opacity-preview', (_event, opacity) => {
 });
 function showMain(destination) {
   if (!mainWindow) createMain();
-  if (mainWindow.isMinimized()) mainWindow.restore();
-  mainWindow.show(); mainWindow.focus();
+  else {
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.show(); mainWindow.focus();
+  }
   if (destination === 'moments') {
     const target = mainWindow;
     const navigate = () => { if (!target.isDestroyed()) target.webContents.send('main:navigate', destination); };
@@ -364,13 +467,6 @@ function showMain(destination) {
 }
 ipcMain.handle('main:show', (_event, destination) => showMain(destination));
 app.whenReady().then(async () => {
-  tray = require('./tray.cjs')(electron, {
-    showWidget: createWidget,
-    hideWidget: () => { stopDesktopEffect(); widgetWindow?.hide(); introduceTray(); },
-    showMain,
-    quit: () => app.quit()
-  });
-  tray.on('balloon-click', showMain);
   let setupComplete = false, savedOnboardingStep;
   try {
     const savedPositions = JSON.parse(await fs.readFile(positionsPath(), 'utf8'));
@@ -401,7 +497,7 @@ app.whenReady().then(async () => {
   powerMonitor.on('unlock-screen', refreshClocks);
   for (const event of ['display-added', 'display-removed', 'display-metrics-changed']) screen.on(event, raiseWidget);
 });
-// Closing a window leaves the tray available to bring the countdown back.
+// Background operation starts only after setup and the first widget launch.
 app.on('window-all-closed', () => { if (!tray) app.quit(); });
 app.on('before-quit', () => {
   quitting = true;

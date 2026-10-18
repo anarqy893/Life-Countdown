@@ -9,6 +9,7 @@ contextBridge.exposeInMainWorld('desktop', {
   save: state => ipcRenderer.invoke('settings:write', state),
   reset: () => ipcRenderer.invoke('settings:reset'),
   openWidget: () => ipcRenderer.invoke('widget:open'),
+  chooseWidgetPeriod: point => ipcRenderer.invoke('widget:choose-period', point),
   readStartup: () => ipcRenderer.invoke('startup:read'),
   setStartup: enabled => ipcRenderer.invoke('startup:set', enabled),
   closeWidget: () => ipcRenderer.invoke('widget:close'),

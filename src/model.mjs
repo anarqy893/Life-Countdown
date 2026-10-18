@@ -24,7 +24,7 @@ export function defaults() {
   const start = today();
   return {
     version: 1, birthday: '', lifespan: 90, selected: 'life', onboardingStep: 'welcome', setupHoursConfirmed: false, gridView: 'allocations', overviewLayout: 'split', navigationExpanded: false, countdownFormat: 'seconds', widgetOpacity: 85, widgetCounterOnly: false, hourlyEffect: 'off', hiddenGroups: [],
-    moments: [], widgetGridView: 'allocations',
+    moments: [], widgetGridView: 'allocations', widgetSelected: 'life', setupWidgetPulseShown: false,
     categories: [
       { id: 'sleep', name: 'Sleep', color: '#859def', unit: 'night' },
       { id: 'work', name: 'Work', color: '#e9aa72', unit: 'week' }
@@ -56,6 +56,9 @@ export function periodFor(state) {
     return { id: 'life', name: 'My life', start: state.birthday, end: addYears(state.birthday, Number(state.lifespan)) };
   }
   return state.periods.find(period => period.id === state.selected) || null;
+}
+export function widgetPeriodFor(state) {
+  return periodFor({ ...state, selected: state.widgetSelected || 'life' }) || periodFor({ ...state, selected: 'life' });
 }
 export function calculate(state, period, now = civilNow()) {
   const start = dateValue(period.start), end = dateValue(period.end);

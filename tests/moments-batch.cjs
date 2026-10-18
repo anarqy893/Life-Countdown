@@ -36,19 +36,20 @@ app.commandLine.appendSwitch('force-device-scale-factor', String(factor));
     await fs.writeFile(path.join(__dirname, `../artifacts/moments-batch-${name}-${factor}.png`), (await main.webContents.capturePage()).toPNG());
   };
   await visible('#what-matters');await click('#what-matters');await click('#add-moment');await visible('#moment-picker');
-  assert.equal(await run('document.querySelectorAll("[data-moment-example]").length'), 24);
-  assert.equal(await run('[...document.querySelectorAll("[data-moment-example]")].filter(node => !node.hidden).length'), 6);
+  assert.equal(await run('document.querySelectorAll("[data-moment-example]").length'), 25);
+  assert.equal(await run('[...document.querySelectorAll("[data-moment-example]")].filter(node => !node.hidden).length'), 25);
+  assert.equal(await run('!!document.querySelector("#moment-more-ideas")'), false);
+  assert.equal(await run('document.querySelector("#moments-back").textContent'),'Back to What matters');
+  const ideas=await run('[...document.querySelectorAll("[data-moment-example]")].map(node=>node.textContent.trim())');
+  assert.ok(ideas.includes('Vacation')&&ideas.includes('Trips with friends'));
+  assert.equal(ideas.includes('Annual trips with friends'),false);
   assert.equal(await run('document.querySelector("#moment-review").disabled'), true);
   await click('[data-moment-example="0"]'); await click('[data-moment-example="3"]');
   await click('[data-moment-example="3"]');
   assert.equal(await run('document.querySelector("#moment-review").textContent'), 'Review selected (1)', 'second click deselects a bubble');
   await click('[data-moment-example="3"]');
   await capture('picker');
-  await click('#moment-more-ideas');
-  assert.equal(await run('[...document.querySelectorAll("[data-moment-example]")].filter(node => !node.hidden).length'), 24);
   await click('[data-moment-example="15"]');
-  await click('#moment-more-ideas');
-  assert.equal(await run('document.querySelectorAll("[data-moment-example]")[15].hidden'), false, 'selected extra ideas stay visible when collapsed');
   await click('#moment-review'); await visible('#moment-batch-form');
   assert.equal(await run('document.querySelectorAll("[data-batch-id]").length'), 3);
   await run(`(() => {
@@ -85,12 +86,12 @@ app.commandLine.appendSwitch('force-device-scale-factor', String(factor));
   assert.deepEqual(result.moments.map(({name,times,years,untilAge}) => ({name,times,years,untilAge})), [
     {name:'Swimming in the ocean',times:2,years:1,untilAge:null},
     {name:'Skiing / snowboarding',times:5,years:1,untilAge:65},
-    {name:'Annual trips with friends',times:1,years:3,untilAge:null}
+    {name:'Trips with friends',times:1,years:3,untilAge:null}
   ]);
   assert.deepEqual(result.schedules, initial.schedules);
   await run('location.reload()'); await visible('#what-matters');
   await click('#what-matters'); await visible('.moments-collection');
   assert.equal(await run('document.querySelectorAll("[data-moment-edit]").length'), 3, 'saved batch survives reload and back navigation');
-  console.log(`Batch check passed at ${factor}: 24 ideas, disclosure, selection, yearly counts, rarer frequencies, custom end ages, drafts, validation, save all, and persistence.`);
+  console.log(`Batch check passed at ${factor}: all 25 ideas, selection, yearly counts, rarer frequencies, custom end ages, drafts, validation, save all, and persistence.`);
   app.exit(0);
 })().catch(error => { console.error(error); app.exit(1); });
